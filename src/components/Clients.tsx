@@ -1,0 +1,33 @@
+import Image from "next/image";
+import { clients } from "@/lib/clients";
+
+function GenericLogo() {
+  return (
+    <svg className="client-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+      <rect x="4" y="4" width="40" height="40" rx="8" fill="none" stroke="currentColor" strokeWidth="2" />
+      <path d="M14 30l7-9 5 6 4-5 6 8z" fill="currentColor" />
+      <circle cx="31" cy="17" r="3" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function Clients() {
+  return (
+    <section id="clientes" className="section wrap" aria-labelledby="clientes-titulo">
+      <h2 id="clientes-titulo">Clientes</h2>
+      <p className="lead">Empresas que han confiado en Textiles Becka.</p>
+      <ul className="clients">
+        {clients.map((c) => (
+          <li key={c.id} className="client">
+            {c.logo ? (
+              <Image className="client-logo" src={c.logo.src} alt="" width={c.logo.width} height={c.logo.height} />
+            ) : (
+              <GenericLogo />
+            )}
+            <span>{c.name}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
