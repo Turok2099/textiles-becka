@@ -1,9 +1,9 @@
 ---
 name: becka-content
-description: Redactar contenido, fichas textiles o metadatos para Textiles Becka. Usar al incorporar información comercial o productos confirmados.
+description: Redactar contenido, fichas textiles o metadatos para Beckatex. Usar al incorporar información comercial o productos confirmados.
 ---
 
-Escribir en español claro y conservar el nombre Textiles Becka.
+Escribir en español claro y conservar el nombre Beckatex.
 Antes de publicar información comercial, separar datos confirmados de propuestas. Pedir datos faltantes solo cuando bloqueen el trabajo.
 No convertir propuestas en afirmaciones sobre materiales, durabilidad, experiencia, clientes o disponibilidad.
 Para fichas reales, recoger nombre, fotos y alt, descripción, composición, medidas, colores y unidad de venta cuando el propietario los facilite.

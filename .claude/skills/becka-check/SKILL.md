@@ -1,6 +1,6 @@
 ---
 name: becka-check
-description: Validar cambios de código en Textiles Becka antes de entregar y diagnosticar fallos de compilación, tipos o calidad.
+description: Validar cambios de código en Beckatex antes de entregar y diagnosticar fallos de compilación, tipos o calidad.
 ---
 
 Revisar el cambio y ejecutar npm run lint, npm run typecheck y npm run build para cambios de aplicación.

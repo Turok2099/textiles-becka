@@ -1,6 +1,6 @@
 ---
 name: becka-next
-description: Desarrollar rutas, componentes y datos de Textiles Becka con Next.js App Router. Usar para cambios funcionales o de arquitectura.
+description: Desarrollar rutas, componentes y datos de Beckatex con Next.js App Router. Usar para cambios funcionales o de arquitectura.
 ---
 
 Leer CLAUDE.md y package.json antes de cambiar la estructura.

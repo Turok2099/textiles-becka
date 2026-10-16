@@ -1,4 +1,5 @@
 import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa6";
+import { Logo } from "@/components/Logo";
 import { site } from "@/lib/site";
 
 export function SiteFooter() {
@@ -6,7 +7,7 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="wrap footer-inner">
-        <p className="brand">Textiles <strong>Becka</strong></p>
+        <p className="brand"><Logo /> <span>Becka<strong>tex</strong></span></p>
         <nav aria-label="Navegación del pie de página">
           <ul>{site.nav.map((i) => <li key={i.href}><a href={i.href}>{i.label}</a></li>)}</ul>
         </nav>

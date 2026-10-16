@@ -1,6 +1,6 @@
 ---
 name: becka-seo
-description: Especialista en SEO y contenido comercial de Textiles Becka (prendas, uniformes, artículos promocionales y servicios de personalización). Usar ÚNICAMENTE cuando el usuario lo pida de forma explícita, por ejemplo "usa becka-seo" o "activa la skill de SEO". No activar por iniciativa propia al editar productos, categorías, textos, estilos o código.
+description: Especialista en SEO y contenido comercial de Beckatex (prendas, uniformes, artículos promocionales y servicios de personalización). Usar ÚNICAMENTE cuando el usuario lo pida de forma explícita, por ejemplo "usa becka-seo" o "activa la skill de SEO". No activar por iniciativa propia al editar productos, categorías, textos, estilos o código.
 disable-model-invocation: true
 ---
 

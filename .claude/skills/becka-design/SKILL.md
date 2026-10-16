@@ -1,6 +1,6 @@
 ---
 name: becka-design
-description: Diseñar o modificar la interfaz de Textiles Becka, incluyendo estilos, componentes visuales, adaptación móvil y accesibilidad.
+description: Diseñar o modificar la interfaz de Beckatex, incluyendo estilos, componentes visuales, adaptación móvil y accesibilidad.
 ---
 
 La dirección inicial es editorial: fondo marfil, tonos terracota y olivo, titulares serif y texto sans. Es provisional hasta recibir identidad oficial.

@@ -1,7 +1,7 @@
-# Textiles Becka
+# Beckatex
 
 ## Alcance actual
-Base de un sitio público en español para Textiles Becka. Solo está confirmado el nombre.
+Base de un sitio público en español para Beckatex. Solo está confirmado el nombre.
 La dirección visual, el eslogan y los textos son propuestas iniciales editables.
 No asumir que hay tienda, pagos, inventario, envíos o un catálogo aprobado.
 

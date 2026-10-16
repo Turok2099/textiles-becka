@@ -1,4 +1,4 @@
-# Textiles Becka
+# Beckatex
 
 Base inicial de Next.js con App Router, TypeScript y Tailwind CSS.
 

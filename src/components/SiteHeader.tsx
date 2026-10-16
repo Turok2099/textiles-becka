@@ -1,3 +1,4 @@
+import { Logo } from "@/components/Logo";
 import { site } from "@/lib/site";
 
 type Theme = "violeta" | "azul";
@@ -13,7 +14,7 @@ export function SiteHeader({ theme }: Readonly<{ theme?: Theme }>) {
     <header className="site-header">
       <div className="wrap header-inner">
         <a className="brand" href="#inicio" aria-label={`${site.name}, inicio`}>
-          Textiles <strong>Becka</strong>
+          <Logo /> <span>Becka<strong>tex</strong></span>
         </a>
         <nav aria-label="Navegación principal">
           <ul>
