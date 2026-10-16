@@ -1,8 +1,15 @@
-// Logotipo genérico provisional: icono de playera. Reemplazar por el logo oficial cuando exista.
-export function Logo({ size = 28 }: Readonly<{ size?: number }>) {
+import Image from "next/image";
+import { site } from "@/lib/site";
+
+export function Logo({ height = 40, priority = false }: Readonly<{ height?: number; priority?: boolean }>) {
   return (
-    <svg className="logo-mark" viewBox="0 0 24 24" width={size} height={size} aria-hidden="true" focusable="false">
-      <path d="M8 3 3 6.5l2.2 4L8 9v11a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V9l2.8 1.5 2.2-4L16 3c0 1.7-1.8 3-4 3S8 4.7 8 3z" fill="currentColor" />
-    </svg>
+    <Image
+      className="logo"
+      src="/logo/beckatex-logo.png"
+      alt={site.name}
+      width={Math.round(height * (916 / 224))}
+      height={height}
+      priority={priority}
+    />
   );
 }

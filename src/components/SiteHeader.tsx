@@ -14,7 +14,7 @@ export function SiteHeader({ theme }: Readonly<{ theme?: Theme }>) {
     <header className="site-header">
       <div className="wrap header-inner">
         <a className="brand" href="#inicio" aria-label={`${site.name}, inicio`}>
-          <Logo /> <span>Becka<strong>tex</strong></span>
+          <Logo priority />
         </a>
         <nav aria-label="Navegación principal">
           <ul>

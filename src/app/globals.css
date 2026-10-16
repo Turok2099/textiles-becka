@@ -56,7 +56,8 @@ h3 { font-size: 1.125rem; font-weight: 600; }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.5rem; }
 .brand { font-family: Georgia, serif; font-size: 1.25rem; letter-spacing: 0.04em; padding-block: 0.5rem; }
 .brand { display: inline-flex; align-items: center; gap: 0.5rem; }
-.logo-mark { color: var(--accent); flex: none; }
+.logo { display: block; width: auto; height: 2.5rem; }
+.site-footer .logo { height: 2.25rem; }
 .brand strong { color: var(--accent); font-weight: 700; }
 .site-header nav ul, .site-footer nav ul { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; }
 .site-header nav a { display: inline-block; padding: 0.75rem 0.25rem; font-size: 0.9rem; }

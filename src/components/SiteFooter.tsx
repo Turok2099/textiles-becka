@@ -7,7 +7,7 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="wrap footer-inner">
-        <p className="brand"><Logo /> <span>Becka<strong>tex</strong></span></p>
+        <p className="brand"><Logo height={36} /></p>
         <nav aria-label="Navegación del pie de página">
           <ul>{site.nav.map((i) => <li key={i.href}><a href={i.href}>{i.label}</a></li>)}</ul>
         </nav>
