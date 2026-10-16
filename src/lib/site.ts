@@ -15,6 +15,8 @@ export const site = {
   nav: [
     { label: "Productos", href: "#productos" },
     { label: "Clientes", href: "#clientes" },
+    { label: "Promocionales", href: "#promocionales" },
+    { label: "Servicios", href: "#servicios" },
     { label: "Nosotros", href: "#nosotros" },
     { label: "Contacto", href: "#contacto" },
   ],
@@ -27,7 +29,9 @@ export const site = {
     ],
   },
   contact: {
-    description: "Escríbenos por WhatsApp o encuéntranos en redes sociales.",
+    description: "Escríbenos por WhatsApp o llámanos para pedidos y catálogo.",
+    // Teléfono proporcionado por la clienta: +52 55 4568 3821.
+    phone: { label: "+52 55 4568 3821", href: "tel:+525545683821" },
   },
   social: {
     instagram: { label: "Instagram", handle: "@beckauniformes", href: "https://www.instagram.com/beckauniformes/" },
@@ -35,6 +39,7 @@ export const site = {
     // Número confirmado por el equipo: +52 55 2079 8115.
     whatsapp: {
       label: "WhatsApp",
+      number: "525520798115",
       href: `https://wa.me/525520798115?text=${encodeURIComponent("Hola, quiero información sobre pedidos y catálogo de Textiles Becka.")}`,
     },
   },

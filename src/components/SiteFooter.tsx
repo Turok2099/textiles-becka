@@ -1,3 +1,4 @@
+import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa6";
 import { site } from "@/lib/site";
 
 export function SiteFooter() {
@@ -11,10 +12,14 @@ export function SiteFooter() {
         </nav>
         <nav aria-label="Redes sociales">
           <ul>
-            {[instagram, tiktok, whatsapp].map((s) => (
+            {[
+              { ...instagram, icon: <FaInstagram /> },
+              { ...tiktok, icon: <FaTiktok /> },
+              { ...whatsapp, icon: <FaWhatsapp /> },
+            ].map((s) => (
               <li key={s.label}>
-                <a href={s.href} target="_blank" rel="noopener noreferrer">
-                  {s.label}<span className="sr-only"> (se abre en otra pestaña)</span>
+                <a className="social-link" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}>
+                  <span aria-hidden="true">{s.icon}</span><span className="sr-only"> (se abre en otra pestaña)</span>
                 </a>
               </li>
             ))}

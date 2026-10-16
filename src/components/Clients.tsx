@@ -11,23 +11,34 @@ function GenericLogo() {
   );
 }
 
+// El carrusel repite la lista para que el bucle sea continuo; solo la primera copia es visible para lectores de pantalla.
+const COPIES = 4;
+
 export function Clients() {
   return (
-    <section id="clientes" className="section wrap" aria-labelledby="clientes-titulo">
-      <h2 id="clientes-titulo">Clientes</h2>
-      <p className="lead">Empresas que han confiado en Textiles Becka.</p>
-      <ul className="clients">
-        {clients.map((c) => (
-          <li key={c.id} className="client">
-            {c.logo ? (
-              <Image className="client-logo" src={c.logo.src} alt="" width={c.logo.width} height={c.logo.height} />
-            ) : (
-              <GenericLogo />
-            )}
-            <span>{c.name}</span>
-          </li>
-        ))}
-      </ul>
+    <section id="clientes" className="section" aria-labelledby="clientes-titulo">
+      <div className="wrap">
+        <h2 id="clientes-titulo">Clientes</h2>
+        <p className="lead">Empresas que han confiado en Textiles Becka.</p>
+      </div>
+      <div className="marquee">
+        <div className="marquee-track">
+          {Array.from({ length: COPIES }, (_, copy) => (
+            <ul key={copy} className="marquee-group" aria-hidden={copy > 0 ? true : undefined}>
+              {clients.map((c) => (
+                <li key={c.id} className="client">
+                  {c.logo ? (
+                    <Image className="client-logo" src={c.logo.src} alt="" width={c.logo.width} height={c.logo.height} />
+                  ) : (
+                    <GenericLogo />
+                  )}
+                  <span>{c.name}</span>
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
