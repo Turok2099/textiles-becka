@@ -9,11 +9,11 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 
-export function HomePage({ theme }: Readonly<{ theme?: "violeta" | "azul" }>) {
+export function HomePage() {
   return (
-    <div className={theme ? `theme-${theme}` : undefined}>
+    <div>
       <a className="skip-link" href="#contenido">Ir al contenido</a>
-      <SiteHeader theme={theme} />
+      <SiteHeader />
       <main id="contenido">
         <Hero />
         <Products />

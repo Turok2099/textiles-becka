@@ -41,7 +41,7 @@ Separar siempre productos, servicios, técnicas de personalización y ocasiones 
 - SEO local solo con ubicación y cobertura confirmadas. No crear páginas de ciudades sin servicio y contenido reales.
 
 ## Aspectos técnicos (cuando corresponda)
-Indexación, robots, sitemap, URL canónicas, redirecciones, códigos de respuesta, navegación, enlaces internos y datos estructurados compatibles con el contenido real. Antes de modificar Next.js, leer la guía pertinente en `node_modules/next/dist/docs/`, como exige AGENTS.md. Las rutas de comparación `/opcion-violeta` y `/opcion-azul` son temporales y llevan noindex.
+Indexación, robots, sitemap, URL canónicas, redirecciones, códigos de respuesta, navegación, enlaces internos y datos estructurados compatibles con el contenido real. Antes de modificar Next.js, leer la guía pertinente en `node_modules/next/dist/docs/`, como exige AGENTS.md.
 
 ## Fuentes vigentes
 Si una recomendación depende de reglas actuales de buscadores o del framework, citar documentación oficial vigente y no memoria. Es la única razón para consultarla en línea.

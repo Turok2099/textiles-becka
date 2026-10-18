@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { clients } from "@/lib/clients";
-
 function GenericLogo() {
   return (
     <svg className="client-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
@@ -10,10 +9,8 @@ function GenericLogo() {
     </svg>
   );
 }
-
 // El carrusel repite la lista para que el bucle sea continuo; solo la primera copia es visible para lectores de pantalla.
 const COPIES = 4;
-
 export function Clients() {
   return (
     <section id="clientes" className="section" aria-labelledby="clientes-titulo">
@@ -28,11 +25,13 @@ export function Clients() {
               {clients.map((c) => (
                 <li key={c.id} className="client">
                   {c.logo ? (
-                    <Image className="client-logo" src={c.logo.src} alt="" width={c.logo.width} height={c.logo.height} />
+                    <Image className="client-logo" src={c.logo.src} alt={c.name} width={c.logo.width} height={c.logo.height} />
                   ) : (
-                    <GenericLogo />
+                    <>
+                      <GenericLogo />
+                      <span>{c.name}</span>
+                    </>
                   )}
-                  <span>{c.name}</span>
                 </li>
               ))}
             </ul>
