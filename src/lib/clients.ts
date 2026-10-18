@@ -15,5 +15,5 @@ export const clients: Client[] = [
   { id: "corpogas", name: "Corpogas (PEMEX)", logo: { src: "/logos_clientes/corpogas.webp", width: 480, height: 240 } },
   { id: "inmobiliaria-chedraui", name: "Inmobiliaria Chedraui", logo: { src: "/logos_clientes/inmobiliaria-chedraui.webp", width: 480, height: 240 } },
   { id: "grupo-imagen", name: "Grupo Imagen", logo: { src: "/logos_clientes/grupo-imagen.webp", width: 480, height: 240 } },
-  { id: "datavision", name: "Datavision" },
+  { id: "datavision", name: "Datavision", logo: { src: "/logos_clientes/datavision.webp", width: 480, height: 240 } },
 ];

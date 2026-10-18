@@ -25,7 +25,7 @@ export const products: ProductCategory[] = [
   {
     id: "escolares",
     name: "Uniformes escolares",
-    items: ["Jumper", "Pants", "Falda", "Polo", "Playera deportiva", "Chamarra invernal", "Sudadera generacional", "Pantalón de vestir", "Camisa escolar", "Blusa escolar", "Suéter", "Chaleco tejido", "Short deportivo", "Bermuda", "Conjunto deportivo escolar"],
+    items: ["Jumper", "Pants", "Falda", "Polo", "Playera deportiva", "Chamarra invernal", "Sudadera generacional", "Pantalón de vestir", "Camisa escolar", "Blusa escolar", "Suéter", "Short deportivo", "Bermuda", "Conjunto deportivo escolar"],
   },
   {
     id: "deportivos",
@@ -35,6 +35,6 @@ export const products: ProductCategory[] = [
   {
     id: "accesorios",
     name: "Accesorios",
-    items: ["Bolsa tote", "Gorra", "Mochila", "Morral", "Bolsa deportiva", "Cangurera", "Visera", "Gorro tejido", "Cosmetiquera", "Estuche textil"],
+    items: ["Bolsa tote", "Gorra", "Mochila", "Bolsa deportiva", "Visera", "Cosmetiquera", "Estuche textil"],
   },
 ];
