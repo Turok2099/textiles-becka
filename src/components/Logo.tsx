@@ -7,7 +7,7 @@ export function Logo({ height = 40, priority = false }: Readonly<{ height?: numb
       className="logo"
       src="/logo/beckatex-logo.png"
       alt={site.name}
-      width={Math.round(height * (1328 / 511))}
+      width={Math.round(height * (900 / 328))}
       height={height}
       priority={priority}
     />

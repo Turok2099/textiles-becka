@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { site } from "@/lib/site";
 
 export function Hero() {
@@ -10,9 +11,7 @@ export function Hero() {
         <p className="lead">{hero.description}</p>
         <a className="button" href={hero.cta.href}>{hero.cta.label}</a>
       </div>
-      <div className="swatches" aria-hidden="true">
-        <span className="swatch sand" /><span className="swatch clay" /><span className="swatch olive" />
-      </div>
+      <Image className="hero-media" src={hero.image.src} alt={hero.image.alt} width={hero.image.width} height={hero.image.height} sizes="(min-width: 48rem) 28rem, 90vw" priority />
     </section>
   );
 }

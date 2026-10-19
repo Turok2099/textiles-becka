@@ -8,7 +8,8 @@ export const site = {
     "Uniformes escolares, deportivos y empresariales, playeras y sudaderas personalizadas con bordado, sublimación o DTF. Pedidos y catálogo por WhatsApp.",
   hero: {
     eyebrow: "Uniformes y textiles",
-    title: "Uniformes y productos textiles con el sello de Beckatex",
+    title: "Uniformes y productos textiles personalizados, tu idea en cada detalle",
+    image: { src: "/productos/hero.webp", width: 928, height: 1152, alt: "Collage de uniformes personalizados: camisas de trabajo, chamarra softshell, sudadera con capucha roja y gorras negras, todas con logotipos bordados" },
     description: "Conoce lo que ofrecemos y escríbenos para pedidos y catálogo.",
     cta: { label: "Explorar productos", href: "#productos" },
   },

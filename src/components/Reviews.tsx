@@ -1,5 +1,5 @@
 import { LuStar } from "react-icons/lu";
-import { isMockReviews, reviews } from "@/lib/reviews";
+import { reviews } from "@/lib/reviews";
 
 // El carrusel repite la lista para que el bucle sea continuo; solo la primera copia es visible para lectores de pantalla.
 const COPIES = 4;
