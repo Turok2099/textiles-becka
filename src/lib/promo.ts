@@ -6,6 +6,15 @@ export type PromoCategory = {
   items: string[];
 };
 
+export type PromoCover = { src: string; width: number; height: number; alt: string };
+
+export const promoCover: PromoCover = {
+  src: "/productos/promocionales.webp",
+  width: 1584,
+  height: 672,
+  alt: "Botellas, termos, tazas, abanico, libretas, plumas y un pin con logotipos y diseños personalizados sobre pedestales",
+};
+
 export const promoCategories: PromoCategory[] = [
   { id: "termos", name: "Termos y botellas", items: ["Termos", "Vasos térmicos", "Botellas para agua", "Botellas deportivas"] },
   { id: "tazas", name: "Tazas y tarros", items: ["Tazas de cerámica", "Tazas mágicas", "Tazas con foto o logotipo", "Tarros cerveceros"] },
