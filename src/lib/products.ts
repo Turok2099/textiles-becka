@@ -6,6 +6,12 @@ export type ProductCategory = {
   items: string[];
 };
 
+export type ProductsCover = { src: string; width: number; height: number; alt: string };
+
+// Portada de la sección de productos. PENDIENTE: la imagen no está en el proyecto.
+// Guardarla en public/productos/ (por ejemplo portada.webp) y asignar aquí { src, width, height, alt }.
+export const productsCover: ProductsCover | undefined = undefined;
+
 export const products: ProductCategory[] = [
   {
     id: "casual",

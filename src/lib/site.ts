@@ -5,7 +5,7 @@
 export const site = {
   name: "Beckatex",
   description:
-    "Beckatex: uniformes y productos textiles. Conoce los productos y escribe por WhatsApp para pedidos y catálogo.",
+    "Uniformes escolares, deportivos y empresariales, playeras y sudaderas personalizadas con bordado, sublimación o DTF. Pedidos y catálogo por WhatsApp.",
   hero: {
     eyebrow: "Uniformes y textiles",
     title: "Uniformes y productos textiles con el sello de Beckatex",
