@@ -108,6 +108,12 @@ h3 { font-size: 1.125rem; font-weight: 600; }
 .marquee-group { display: flex; flex: none; }
 @keyframes marquee { to { transform: translateX(-25%); } }
 .client { display: flex; flex: none; flex-direction: column; align-items: center; justify-content: center; gap: 1.125rem; width: 18rem; margin-right: 1.5rem; padding: 2.25rem 1.5rem; border: 1px solid var(--line); background: var(--card); text-align: center; font-size: 1.4rem; font-weight: 600; }
+.review { display: flex; flex: none; flex-direction: column; gap: 0.875rem; width: 22rem; margin-right: 1.5rem; padding: 1.5rem; border: 1px solid var(--line); border-radius: 0.75rem; background: var(--card); }
+.review-stars { display: flex; gap: 0.125rem; margin: 0; color: var(--accent); font-size: 1.125rem; }
+.review-stars svg { fill: currentColor; }
+.review blockquote { flex: 1; margin: 0; font-size: 0.9375rem; color: var(--foreground); }
+.review-author { display: flex; flex-direction: column; margin: 0; font-size: 0.875rem; color: var(--muted); }
+.review-author strong { color: var(--foreground); }
 .client-mark { width: 4.5rem; height: 4.5rem; color: var(--mark); }
 .client-logo { height: 7.5rem; width: auto; max-width: 100%; object-fit: contain; }
 .about { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; }
@@ -159,6 +165,7 @@ h3 { font-size: 1.125rem; font-weight: 600; }
   .grid { gap: 1.5rem; }
   .product-grid { grid-template-columns: 1fr; }
   .product-card { width: 100%; max-width: 28rem; justify-self: center; }
+  .review { width: 17rem; padding: 1.25rem; }
   .client { width: 14.25rem; padding: 1.875rem 0.75rem; font-size: 1.3rem; }
   .hero { grid-template-columns: 1fr; gap: 2rem; padding-block: 2.5rem; }
   .swatches { height: 12rem; }

@@ -4,6 +4,7 @@ import { Contact } from "@/components/Contact";
 import { Hero } from "@/components/Hero";
 import { Products } from "@/components/Products";
 import { Promo } from "@/components/Promo";
+import { Reviews } from "@/components/Reviews";
 import { Services } from "@/components/Services";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -21,6 +22,7 @@ export function HomePage() {
         <Promo />
         <Services />
         <About />
+        <Reviews />
         <Contact />
       </main>
       <SiteFooter />
