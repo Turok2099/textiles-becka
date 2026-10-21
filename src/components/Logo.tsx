@@ -1,13 +1,18 @@
 import Image from "next/image";
 
-export function Logo({ height = 40, priority = false }: Readonly<{ height?: number; priority?: boolean }>) {
+// Se declara el tamaño real del archivo (1777 × 651) y el CSS (.logo) fija el tamaño visible. El atributo `sizes` le dice a
+// Next el ancho máximo al que se muestra (hasta ~153 px en celular) para que genere variantes con resolución suficiente
+// para pantallas de alta densidad; con quality 90 se conservan los bordes nítidos del logotipo.
+export function Logo({ priority = false }: Readonly<{ priority?: boolean }>) {
   return (
     <Image
       className="logo"
       src="/logo/bktx-logo.png"
       alt="BKTX soluciones textiles"
-      width={Math.round(height * (1777 / 651))}
-      height={height}
+      width={1777}
+      height={651}
+      sizes="160px"
+      quality={90}
       priority={priority}
     />
   );
