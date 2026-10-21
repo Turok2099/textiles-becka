@@ -4,8 +4,18 @@ import { updateTag } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { assertAdmin, createSession, credentialsAreValid, destroySession } from "@/lib/auth";
-import { countSlotPhotos, createUploadSignature, deleteUploadedImage, IMAGES_TAG, isCloudinaryConfigured } from "@/lib/cloudinary";
-import { findSlot, MAX_PHOTOS } from "@/lib/image-slots";
+import {
+  confirmUploaded,
+  createUploadSignature,
+  IMAGES_TAG,
+  isCloudinaryConfigured,
+  listSlotPhotos,
+  restorePhoto,
+  saveFraming,
+  saveOrder,
+  trashPhoto,
+} from "@/lib/cloudinary";
+import { findSlot, MAX_PHOTOS, type UploadedImage } from "@/lib/image-slots";
 
 export type LoginState = { error?: string };
 
@@ -41,55 +51,71 @@ export async function logout() {
   redirect("/admin/login");
 }
 
+// Los cambios se guardan solos: cada acción confirma contra Cloudinary y devuelve la lista oficial de fotos
+// de la categoría. La pantalla solo dice "guardado" cuando recibe esta respuesta.
+export type PhotosResult = { ok: true; photos: UploadedImage[] } | { ok: false; error: string };
+
+async function withSlot(slotId: string, run: (slot: NonNullable<ReturnType<typeof findSlot>>) => Promise<UploadedImage[]>): Promise<PhotosResult> {
+  await assertAdmin();
+  if (!isCloudinaryConfigured) return { ok: false, error: "Cloudinary no está configurado en el servidor." };
+  const slot = findSlot(slotId);
+  if (!slot) return { ok: false, error: "Categoría desconocida." };
+  try {
+    const photos = await run(slot);
+    updateTag(IMAGES_TAG);
+    return { ok: true, photos };
+  } catch (error) {
+    console.error("Error al guardar cambios de fotos:", error);
+    return { ok: false, error: error instanceof Error && error.message.startsWith("Ya no") ? error.message : "No se pudo guardar. Revisa tu conexión e inténtalo de nuevo." };
+  }
+}
+
 export type SignaturesResult =
   | { ok: true; uploads: { url: string; fields: Record<string, string | number> }[] }
   | { ok: false; error: string };
 
-// Paso 1 de la subida: valida ranura y cupo y devuelve una firma por foto para Cloudinary.
-export async function getUploadSignatures(slotId: string, count: number, alt: string): Promise<SignaturesResult> {
+// Paso 1 de la subida: valida categoría y cupo y devuelve una firma por foto para Cloudinary.
+export async function getUploadSignatures(slotId: string, count: number): Promise<SignaturesResult> {
   await assertAdmin();
   if (!isCloudinaryConfigured) return { ok: false, error: "Cloudinary no está configurado en el servidor." };
   const slot = findSlot(slotId);
-  if (!slot) return { ok: false, error: "Sección desconocida." };
-  if (!Number.isInteger(count) || count < 1) return { ok: false, error: "Elige al menos una foto." };
+  if (!slot) return { ok: false, error: "Categoría desconocida." };
+  if (!Number.isInteger(count) || count < 1 || count > MAX_PHOTOS) return { ok: false, error: "Elige entre 1 y 8 fotos." };
 
   let current: number;
   try {
-    current = await countSlotPhotos(slot);
+    current = (await listSlotPhotos(slot)).length;
   } catch {
-    return { ok: false, error: "No se pudo consultar Cloudinary. Inténtalo de nuevo." };
+    return { ok: false, error: "No se pudo consultar Cloudinary. Revisa tu conexión e inténtalo de nuevo." };
   }
-  const room = MAX_PHOTOS - current;
-  if (count > room) {
-    return {
-      ok: false,
-      error: room <= 0 ? `Esta sección ya tiene el máximo de ${MAX_PHOTOS} fotos. Borra alguna para subir otra.` : `Solo caben ${room} foto(s) más en esta sección (máximo ${MAX_PHOTOS}).`,
-    };
+  if (count > MAX_PHOTOS - current) {
+    return { ok: false, error: MAX_PHOTOS - current <= 0 ? "Has agregado las 8 fotos disponibles." : `Solo caben ${MAX_PHOTOS - current} foto(s) más en esta categoría.` };
   }
 
-  const cleanAlt = alt.trim().slice(0, 200);
-  const uploads = Array.from({ length: count }, (_, i) => {
-    const text = cleanAlt ? (count > 1 ? `${cleanAlt} (${i + 1})` : cleanAlt) : `${slot.label}, foto ${current + i + 1}`;
-    return createUploadSignature(slot, text);
-  });
-  return { ok: true, uploads };
+  const now = Date.now();
+  return {
+    ok: true,
+    uploads: Array.from({ length: count }, (_, i) => createUploadSignature(slot, `${slot.label}, foto ${current + i + 1}`, now + i)),
+  };
 }
 
-// Paso 2: el navegador ya subió las fotos; renueva la caché para que el sitio las muestre de inmediato.
-export async function confirmUpload() {
-  await assertAdmin();
-  updateTag(IMAGES_TAG);
+// Paso 2: la foto ya está en Cloudinary; el servidor lo comprueba y renueva el sitio.
+export async function confirmUpload(slotId: string, publicIds: string[]) {
+  return withSlot(slotId, (slot) => confirmUploaded(slot, publicIds.slice(0, MAX_PHOTOS)));
 }
 
-export async function deletePhoto(slotId: string, publicId: string): Promise<{ ok: boolean; error?: string }> {
-  await assertAdmin();
-  const slot = findSlot(slotId);
-  if (!slot) return { ok: false, error: "Sección desconocida." };
-  try {
-    await deleteUploadedImage(slot, publicId);
-  } catch {
-    return { ok: false, error: "No se pudo borrar la foto. Inténtalo de nuevo." };
-  }
-  updateTag(IMAGES_TAG);
-  return { ok: true };
+export async function reorderPhotos(slotId: string, orderedIds: string[]) {
+  return withSlot(slotId, (slot) => saveOrder(slot, orderedIds.slice(0, MAX_PHOTOS)));
+}
+
+export async function setFraming(slotId: string, publicId: string, focus: { fx: number; fy: number } | null) {
+  return withSlot(slotId, (slot) => saveFraming(slot, publicId, focus));
+}
+
+export async function removePhoto(slotId: string, publicId: string) {
+  return withSlot(slotId, (slot) => trashPhoto(slot, publicId));
+}
+
+export async function undoRemovePhoto(slotId: string, publicId: string) {
+  return withSlot(slotId, (slot) => restorePhoto(slot, publicId));
 }

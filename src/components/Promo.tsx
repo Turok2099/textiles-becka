@@ -1,5 +1,8 @@
 import { LuBadge, LuCoffee, LuCupSoda, LuGlassWater, LuNotebookPen } from "react-icons/lu";
 import Image from "next/image";
+import { CardCarousel } from "@/components/CardCarousel";
+import { getUploadedImages } from "@/lib/cloudinary";
+import { slotId, toCarousel } from "@/lib/image-slots";
 import { promoCategories, promoCover } from "@/lib/promo";
 
 const icons: Record<string, React.ReactNode> = {
@@ -10,7 +13,9 @@ const icons: Record<string, React.ReactNode> = {
   accesorios: <LuBadge />,
 };
 
-export function Promo() {
+export async function Promo() {
+  // Fotos subidas desde /admin; las cards sin fotos se ven solo con texto.
+  const uploaded = await getUploadedImages();
   return (
     <section id="promocionales" className="section tint" aria-labelledby="promo-titulo">
       <div className="wrap">
@@ -26,6 +31,9 @@ export function Promo() {
         <ul className="grid product-grid">
           {promoCategories.map((c) => (
             <li key={c.id} className="card product-card">
+              {(uploaded[slotId("promocionales", c.id)]?.length ?? 0) > 0 && (
+                <CardCarousel photos={toCarousel(uploaded[slotId("promocionales", c.id)])} name={c.name} sizes="(min-width: 40rem) 22rem, 100vw" />
+              )}
               <div className="product-head">
                 <span className="product-icon" aria-hidden="true">{icons[c.id]}</span>
                 <h3>{c.name}</h3>

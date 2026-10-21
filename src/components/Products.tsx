@@ -1,7 +1,8 @@
 import { LuChevronDown, LuGraduationCap, LuShirt, LuShoppingBag, LuStethoscope, LuTrophy, LuWind } from "react-icons/lu";
 import Image from "next/image";
-import { ProductCarousel } from "@/components/ProductCarousel";
+import { CardCarousel } from "@/components/CardCarousel";
 import { getUploadedImages } from "@/lib/cloudinary";
+import { slotId, toCarousel } from "@/lib/image-slots";
 import { products, productsCover } from "@/lib/products";
 
 const icons: Record<string, React.ReactNode> = {
@@ -35,10 +36,11 @@ export async function Products() {
         <ul className="grid product-grid">
           {products.map((c) => {
             // Fotos subidas desde /admin; sin ninguna, la imagen local de products.ts.
-            const photos = uploaded[c.id]?.length ? uploaded[c.id] : c.image ? [c.image] : [];
+            const mine = uploaded[slotId("productos", c.id)];
+            const photos = mine?.length ? toCarousel(mine) : c.image ? [c.image] : [];
             return (
             <li key={c.id} className="card product-card">
-              {photos.length > 0 && <ProductCarousel photos={photos} name={c.name} sizes="(min-width: 40rem) 22rem, 100vw" />}
+              {photos.length > 0 && <CardCarousel photos={photos} name={c.name} sizes="(min-width: 40rem) 22rem, 100vw" />}
               <div className="product-head">
                 <span className="product-icon" aria-hidden="true">{icons[c.id]}</span>
                 <h3>{c.name}</h3>

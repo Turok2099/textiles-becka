@@ -1,7 +1,7 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
 import { cacheLife, cacheTag } from "next/cache";
-import { imageSlots, SLOT_FOLDER, type ImageSlot, type UploadedImage } from "@/lib/image-slots";
+import { imageSlots, MAX_PHOTOS, SLOT_ROOT, type ImageSlot, type UploadedImage } from "@/lib/image-slots";
 
 export const IMAGES_TAG = "imagenes";
 
@@ -15,39 +15,82 @@ export const isCloudinaryConfigured = Boolean(cloudName && apiKey && apiSecret);
 const apiBase = `https://api.cloudinary.com/v1_1/${cloudName}`;
 const authHeader = `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString("base64")}`;
 
-type Resource = { public_id: string; version: number; created_at: string; context?: { custom?: { alt?: string } } };
+// Datos que se guardan en cada foto (campo `context` de Cloudinary, sin base de datos):
+//   alt     texto alternativo
+//   pos     orden en la galería (menor primero; sin valor se usa la fecha de subida)
+//   fx, fy  centro del encuadre en % de la foto original (sin valor o "auto": recorte automático)
+//   trashed hora (ms) en que se eliminó; 0 o sin valor = foto activa. Permite "deshacer" unos minutos.
+type Resource = {
+  public_id: string;
+  version: number;
+  created_at: string;
+  width: number;
+  height: number;
+  context?: { custom?: Record<string, string | undefined> };
+};
 
-function imageUrl(slot: ImageSlot, version: number, publicId: string) {
-  const t = `c_fill,g_auto,w_${slot.width},h_${slot.height},f_auto,q_auto`;
-  return `https://res.cloudinary.com/${cloudName}/image/upload/${t}/v${version}/${publicId}`;
+const TRASH_GRACE_MS = 10 * 60 * 1000;
+
+function num(v: string | undefined) {
+  const n = Number(v);
+  return v !== undefined && v !== "" && Number.isFinite(n) ? n : undefined;
+}
+
+function isTrashed(r: Resource) {
+  return (num(r.context?.custom?.trashed) ?? 0) > 0;
+}
+
+function orderKey(r: Resource) {
+  return num(r.context?.custom?.pos) ?? Date.parse(r.created_at);
+}
+
+function transformUrl(r: Resource, version: number, t: string) {
+  return `https://res.cloudinary.com/${cloudName}/image/upload/${t}/v${version}/${r.public_id}`;
+}
+
+function toImage(slot: ImageSlot, r: Resource, index: number): UploadedImage {
+  const fx = num(r.context?.custom?.fx);
+  const fy = num(r.context?.custom?.fy);
+  const focus =
+    fx !== undefined && fy !== undefined
+      ? `g_xy_center,x_${Math.round((r.width * fx) / 100)},y_${Math.round((r.height * fy) / 100)}`
+      : "g_auto";
+  const crop = (w: number, h: number) => `c_fill,${focus},w_${w},h_${h},f_auto,q_auto`;
+  return {
+    publicId: r.public_id,
+    src: transformUrl(r, r.version, crop(slot.width, slot.height)),
+    thumb: transformUrl(r, r.version, crop(240, Math.round((240 * slot.height) / slot.width))),
+    full: transformUrl(r, r.version, "c_limit,w_1400,f_auto,q_auto"),
+    origWidth: r.width,
+    origHeight: r.height,
+    fx,
+    fy,
+    width: slot.width,
+    height: slot.height,
+    alt: r.context?.custom?.alt?.trim() || `${slot.label}, foto ${index + 1}`,
+  };
 }
 
 async function listResources(): Promise<Resource[]> {
-  const url = `${apiBase}/resources/image/upload?prefix=${encodeURIComponent(`${SLOT_FOLDER}/`)}&context=true&max_results=500`;
+  const url = `${apiBase}/resources/image/upload?prefix=${encodeURIComponent(`${SLOT_ROOT}/`)}&context=true&max_results=500`;
   const res = await fetch(url, { headers: { Authorization: authHeader }, cache: "no-store" });
   if (!res.ok) throw new Error(`Cloudinary respondió ${res.status}`);
   return ((await res.json()) as { resources: Resource[] }).resources;
 }
 
+function photosOf(slot: ImageSlot, resources: Resource[]): UploadedImage[] {
+  return resources
+    .filter((r) => r.public_id.startsWith(`${slot.folder}/`) && !isTrashed(r))
+    .sort((a, b) => orderKey(a) - orderKey(b)) // la primera es la portada
+    .map((r, i) => toImage(slot, r, i));
+}
+
 function groupBySlot(resources: Resource[]): Record<string, UploadedImage[]> {
-  const out: Record<string, UploadedImage[]> = {};
-  for (const slot of imageSlots) {
-    out[slot.id] = resources
-      .filter((r) => r.public_id.startsWith(`${slot.folder}/`))
-      .sort((a, b) => a.created_at.localeCompare(b.created_at)) // orden de subida: la primera es la portada
-      .map((r, i) => ({
-        publicId: r.public_id,
-        src: imageUrl(slot, r.version, r.public_id),
-        width: slot.width,
-        height: slot.height,
-        alt: r.context?.custom?.alt?.trim() || `${slot.label}, foto ${i + 1}`,
-      }));
-  }
-  return out;
+  return Object.fromEntries(imageSlots.map((slot) => [slot.id, photosOf(slot, resources)]));
 }
 
 // Fotos subidas por ranura (id de ranura → fotos en orden). Vacío si no hay Cloudinary o falla la consulta.
-// El resultado se guarda en caché y se renueva al subir o borrar (updateTag) o cada pocas horas.
+// El resultado se guarda en caché y se renueva al cambiar algo (updateTag) o cada pocas horas.
 export async function getUploadedImages(): Promise<Record<string, UploadedImage[]>> {
   "use cache";
   cacheTag(IMAGES_TAG);
@@ -63,14 +106,31 @@ export async function getUploadedImages(): Promise<Record<string, UploadedImage[
   }
 }
 
-// Cuántas fotos tiene hoy una ranura, consultando Cloudinary directamente (sin caché).
-export async function countSlotPhotos(slot: ImageSlot): Promise<number> {
-  return (groupBySlot(await listResources())[slot.id] ?? []).length;
+// Fotos actuales de una ranura consultando Cloudinary directamente (sin caché). Es la lectura "oficial" tras cada cambio.
+export async function listSlotPhotos(slot: ImageSlot): Promise<UploadedImage[]> {
+  return photosOf(slot, await listResources());
 }
 
-// Valor del campo `context` de Cloudinary: "alt=texto" con = | \ escapados.
-function contextValue(alt: string) {
-  return `alt=${alt.replace(/([=|\\])/g, "\\$1")}`;
+// Valor del campo `context` de Cloudinary: "k=v|k2=v2" con = | \ escapados en los valores.
+function contextValue(values: Record<string, string | number>) {
+  return Object.entries(values)
+    .map(([k, v]) => `${k}=${String(v).replace(/([=|\\])/g, "\\$1")}`)
+    .join("|");
+}
+
+// Actualiza (fusiona) datos del contexto de una foto.
+async function updateContext(publicId: string, values: Record<string, string | number>) {
+  const res = await fetch(`${apiBase}/image/context`, {
+    method: "POST",
+    headers: { Authorization: authHeader },
+    body: new URLSearchParams({
+      command: "add",
+      context: contextValue(values),
+      public_ids: publicId,
+      timestamp: String(Math.floor(Date.now() / 1000)),
+    }),
+  });
+  if (!res.ok) throw new Error(`Cloudinary respondió ${res.status}`);
 }
 
 function sign(params: Record<string, string | number>) {
@@ -82,11 +142,11 @@ function sign(params: Record<string, string | number>) {
 }
 
 // Datos firmados para que el navegador suba una foto directo a Cloudinary (el secreto no sale del servidor).
-// Cada foto lleva un identificador único dentro de la carpeta de su ranura.
-export function createUploadSignature(slot: ImageSlot, alt: string) {
+// Cada foto lleva un identificador único en la carpeta de su ranura y entra al final de la galería (pos = hora de subida).
+export function createUploadSignature(slot: ImageSlot, alt: string, pos: number) {
   const params = {
     allowed_formats: "jpg,jpeg,png,webp",
-    context: contextValue(alt),
+    context: contextValue({ alt, pos }),
     public_id: `${slot.folder}/${Date.now().toString(36)}-${randomBytes(3).toString("hex")}`,
     timestamp: Math.floor(Date.now() / 1000),
   };
@@ -96,12 +156,68 @@ export function createUploadSignature(slot: ImageSlot, alt: string) {
   };
 }
 
-// Borra una foto de la galería de una ranura. Solo acepta identificadores dentro de la carpeta de esa ranura.
-export async function deleteUploadedImage(slot: ImageSlot, publicId: string) {
-  if (!publicId.startsWith(`${slot.folder}/`) || publicId.includes("..")) throw new Error("Foto no válida");
+async function hardDelete(publicId: string) {
   const res = await fetch(`${apiBase}/resources/image/upload?public_ids[]=${encodeURIComponent(publicId)}&invalidate=true`, {
     method: "DELETE",
     headers: { Authorization: authHeader },
   });
   if (!res.ok) throw new Error(`Cloudinary respondió ${res.status}`);
+}
+
+function assertInSlot(slot: ImageSlot, publicId: string) {
+  if (!publicId.startsWith(`${slot.folder}/`) || publicId.includes("..")) throw new Error("Foto no válida");
+}
+
+// Comprueba que las fotos recién subidas existen en Cloudinary (confirmación del servidor).
+export async function confirmUploaded(slot: ImageSlot, publicIds: string[]) {
+  const resources = await listResources();
+  for (const id of publicIds) {
+    assertInSlot(slot, id);
+    if (!resources.some((r) => r.public_id === id)) throw new Error("La foto no llegó al servidor");
+  }
+  return photosOf(slot, resources);
+}
+
+// Guarda el orden: la primera foto de la lista es la portada.
+export async function saveOrder(slot: ImageSlot, orderedIds: string[]) {
+  const current = (await listSlotPhotos(slot)).map((p) => p.publicId);
+  const same = orderedIds.length === current.length && new Set(orderedIds).size === current.length && orderedIds.every((id) => current.includes(id));
+  if (!same) throw new Error(`La galería cambió; recarga la página (cliente: ${orderedIds.map((i) => i.slice(-4))} | servidor: ${current.map((i) => i.slice(-4))})`);
+  await Promise.all(orderedIds.map((id, i) => updateContext(id, { pos: (i + 1) * 10 })));
+  return listSlotPhotos(slot);
+}
+
+// Guarda el centro del encuadre (en % de la foto original) o vuelve al recorte automático (null).
+export async function saveFraming(slot: ImageSlot, publicId: string, focus: { fx: number; fy: number } | null) {
+  assertInSlot(slot, publicId);
+  if (focus && !(focus.fx >= 0 && focus.fx <= 100 && focus.fy >= 0 && focus.fy <= 100)) throw new Error("Encuadre no válido");
+  await updateContext(publicId, focus ? { fx: Math.round(focus.fx * 10) / 10, fy: Math.round(focus.fy * 10) / 10 } : { fx: "auto", fy: "auto" });
+  return listSlotPhotos(slot);
+}
+
+// Elimina con posibilidad de deshacer: la foto se oculta del sitio y se borra del todo pasados 10 minutos.
+export async function trashPhoto(slot: ImageSlot, publicId: string) {
+  assertInSlot(slot, publicId);
+  await updateContext(publicId, { trashed: Date.now() });
+  // Limpieza de papelera: borra lo eliminado hace más de TRASH_GRACE_MS (cualquier ranura).
+  try {
+    const expired = (await listResources()).filter((r) => {
+      const t = num(r.context?.custom?.trashed) ?? 0;
+      return t > 0 && Date.now() - t > TRASH_GRACE_MS;
+    });
+    await Promise.all(expired.map((r) => hardDelete(r.public_id)));
+  } catch (error) {
+    console.error("No se pudo vaciar la papelera de Cloudinary:", error);
+  }
+  return listSlotPhotos(slot);
+}
+
+export async function restorePhoto(slot: ImageSlot, publicId: string) {
+  assertInSlot(slot, publicId);
+  const resources = await listResources();
+  const target = resources.find((r) => r.public_id === publicId);
+  if (!target) throw new Error("Ya no se puede deshacer");
+  if (photosOf(slot, resources).length >= MAX_PHOTOS) throw new Error("La categoría ya tiene las 8 fotos");
+  await updateContext(publicId, { trashed: 0 });
+  return listSlotPhotos(slot);
 }

@@ -1,10 +1,9 @@
 import { Suspense } from "react";
-import { ProductCarousel } from "@/components/ProductCarousel";
 import { isAuthConfigured, requireAdmin } from "@/lib/auth";
 import { getUploadedImages, isCloudinaryConfigured } from "@/lib/cloudinary";
-import { imageSlots, MAX_PHOTOS } from "@/lib/image-slots";
+import { imageSlots, MAX_PHOTOS, slotSections } from "@/lib/image-slots";
 import { logout } from "./actions";
-import { UploadSlot } from "./UploadSlot";
+import { CategoryCard } from "./CategoryCard";
 
 export default function AdminPage() {
   return (
@@ -23,32 +22,36 @@ async function Panel() {
   return (
     <>
       <header className="admin-head">
-        <h1>Imágenes del sitio</h1>
-        <form action={logout}><button className="button outline" type="submit">Cerrar sesión</button></form>
+        <div>
+          <h1>Fotos de tu sitio</h1>
+          <p className="admin-lead">Agrega fotos a cada categoría y elige cómo se mostrarán</p>
+        </div>
+        <form action={logout}>
+          <button className="abtn" type="submit">Cerrar sesión</button>
+        </form>
       </header>
       {!isCloudinaryConfigured && (
-        <p role="alert" className="admin-error">Cloudinary no está configurado: faltan las variables CLOUDINARY_* en el servidor.</p>
+        <p role="alert" className="admin-alert">Cloudinary no está configurado: faltan las variables CLOUDINARY_* en el servidor.</p>
       )}
-      {!isAuthConfigured && <p role="alert" className="admin-error">Faltan variables de acceso.</p>}
-      <section aria-labelledby="productos-admin">
-        <h2 id="productos-admin">Productos</h2>
-        <p className="lead">
-          Cada categoría es un carrusel de hasta {MAX_PHOTOS} fotos. La primera que subas es la que se ve primero en el sitio.
-          Las fotos se recortan solas a formato vertical (4:5), así que cualquiera encaja. Formatos: JPG, PNG o WebP, hasta 10 MB cada una.
-        </p>
-        <ul className="admin-grid">
-          {imageSlots.map((slot) => {
-            const photos = uploaded[slot.id] ?? [];
-            return (
-              <li key={slot.id} className="card admin-card">
-                <ProductCarousel photos={photos.length ? photos : [slot.fallback]} name={slot.label} sizes="20rem" />
-                <h3>{slot.label}</h3>
-                <UploadSlot slotId={slot.id} photos={photos.map(({ publicId, src, alt }) => ({ publicId, src, alt }))} max={MAX_PHOTOS} />
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+      {!isAuthConfigured && <p role="alert" className="admin-alert">Faltan variables de acceso.</p>}
+      {slotSections.map((section) => (
+        <section key={section.id} className="admin-section" aria-labelledby={`admin-${section.id}`}>
+          <h2 id={`admin-${section.id}`}>{section.title}</h2>
+          <p className="admin-ratio">Las fotos se recortan solas al formato {section.ratioLabel}</p>
+          <div className="admin-grid">
+            {imageSlots.filter((s) => s.section === section.id).map((slot) => (
+              <CategoryCard
+                key={slot.id}
+                slot={{ id: slot.id, label: slot.label, width: slot.width, height: slot.height }}
+                ratioLabel={section.ratioLabel}
+                max={MAX_PHOTOS}
+                initialPhotos={uploaded[slot.id] ?? []}
+                fallback={slot.fallback}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
     </>
   );
 }

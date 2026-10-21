@@ -8,13 +8,13 @@ type Photo = { src: string; width: number; height: number; alt: string };
 
 // Carrusel con desplazamiento táctil (scroll-snap), flechas, puntos y contador "2 / 5".
 // Con una sola foto se muestra una imagen simple, sin controles.
-export function ProductCarousel({ photos, name, sizes }: { photos: Photo[]; name: string; sizes: string }) {
+export function CardCarousel({ photos, name, sizes }: { photos: Photo[]; name: string; sizes: string }) {
   const track = useRef<HTMLUListElement>(null);
   const [index, setIndex] = useState(0);
 
   if (photos.length === 1) {
     const p = photos[0];
-    return <Image className="product-media" src={p.src} alt={p.alt} width={p.width} height={p.height} sizes={sizes} />;
+    return <Image className="product-media" style={{ aspectRatio: `${p.width} / ${p.height}` }} src={p.src} alt={p.alt} width={p.width} height={p.height} sizes={sizes} />;
   }
 
   function go(to: number) {
@@ -34,7 +34,7 @@ export function ProductCarousel({ photos, name, sizes }: { photos: Photo[]; name
       <ul ref={track} className="carousel-track" onScroll={onScroll} tabIndex={0} aria-label={`Fotos de ${name}, desliza para ver más`}>
         {photos.map((p, i) => (
           <li key={p.src} className="carousel-slide" role="group" aria-roledescription="diapositiva" aria-label={`${i + 1} de ${photos.length}`}>
-            <Image className="carousel-img" src={p.src} alt={p.alt} width={p.width} height={p.height} sizes={sizes} />
+            <Image className="carousel-img" style={{ aspectRatio: `${p.width} / ${p.height}` }} src={p.src} alt={p.alt} width={p.width} height={p.height} sizes={sizes} />
           </li>
         ))}
       </ul>
