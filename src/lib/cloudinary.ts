@@ -71,11 +71,19 @@ function toImage(slot: ImageSlot, r: Resource, index: number): UploadedImage {
   };
 }
 
+// Cloudinary entrega hasta 500 recursos por consulta; se sigue el cursor hasta leerlos todos para no cortar la lista en silencio.
 async function listResources(): Promise<Resource[]> {
-  const url = `${apiBase}/resources/image/upload?prefix=${encodeURIComponent(`${SLOT_ROOT}/`)}&context=true&max_results=500`;
-  const res = await fetch(url, { headers: { Authorization: authHeader }, cache: "no-store" });
-  if (!res.ok) throw new Error(`Cloudinary respondió ${res.status}`);
-  return ((await res.json()) as { resources: Resource[] }).resources;
+  const all: Resource[] = [];
+  let cursor: string | undefined;
+  do {
+    const url = `${apiBase}/resources/image/upload?prefix=${encodeURIComponent(`${SLOT_ROOT}/`)}&context=true&max_results=500${cursor ? `&next_cursor=${encodeURIComponent(cursor)}` : ""}`;
+    const res = await fetch(url, { headers: { Authorization: authHeader }, cache: "no-store" });
+    if (!res.ok) throw new Error(`Cloudinary respondió ${res.status}`);
+    const page = (await res.json()) as { resources: Resource[]; next_cursor?: string };
+    all.push(...page.resources);
+    cursor = page.next_cursor;
+  } while (cursor);
+  return all;
 }
 
 function photosOf(slot: ImageSlot, resources: Resource[]): UploadedImage[] {
@@ -180,10 +188,13 @@ export async function confirmUploaded(slot: ImageSlot, publicIds: string[]) {
 
 // Guarda el orden: la primera foto de la lista es la portada.
 export async function saveOrder(slot: ImageSlot, orderedIds: string[]) {
-  const current = (await listSlotPhotos(slot)).map((p) => p.publicId);
+  const active = (await listResources()).filter((r) => r.public_id.startsWith(`${slot.folder}/`) && !isTrashed(r));
+  const current = active.map((r) => r.public_id);
   const same = orderedIds.length === current.length && new Set(orderedIds).size === current.length && orderedIds.every((id) => current.includes(id));
-  if (!same) throw new Error(`La galería cambió; recarga la página (cliente: ${orderedIds.map((i) => i.slice(-4))} | servidor: ${current.map((i) => i.slice(-4))})`);
-  await Promise.all(orderedIds.map((id, i) => updateContext(id, { pos: (i + 1) * 10 })));
+  if (!same) throw new Error("La galería cambió; recarga la página");
+  // Solo se reescriben las fotos cuya posición cambia (con 20 fotos evita decenas de llamadas por cada movimiento).
+  const posOf = new Map(active.map((r) => [r.public_id, num(r.context?.custom?.pos)]));
+  await Promise.all(orderedIds.map((id, i) => (posOf.get(id) === (i + 1) * 10 ? null : updateContext(id, { pos: (i + 1) * 10 }))));
   return listSlotPhotos(slot);
 }
 
@@ -217,7 +228,7 @@ export async function restorePhoto(slot: ImageSlot, publicId: string) {
   const resources = await listResources();
   const target = resources.find((r) => r.public_id === publicId);
   if (!target) throw new Error("Ya no se puede deshacer");
-  if (photosOf(slot, resources).length >= MAX_PHOTOS) throw new Error("La categoría ya tiene las 8 fotos");
+  if (photosOf(slot, resources).length >= MAX_PHOTOS) throw new Error(`La categoría ya tiene las ${MAX_PHOTOS} fotos`);
   await updateContext(publicId, { trashed: 0 });
   return listSlotPhotos(slot);
 }

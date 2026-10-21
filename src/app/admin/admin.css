@@ -147,3 +147,6 @@ button.athumb:hover { border-color: var(--blue); }
 /* Ajustes: la línea de estado no ocupa espacio mientras está vacía y los botones de acciones caben en una línea en 360 px */
 .astatus:empty { min-height: 0; height: 0; margin-top: -0.875rem; }
 .aactions .abtn { gap: 0.375rem; padding-inline: 0.5rem; }
+
+/* Acciones de la cabecera: volver al sitio y cerrar sesión */
+.admin-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }

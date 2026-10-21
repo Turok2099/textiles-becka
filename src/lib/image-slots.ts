@@ -42,7 +42,7 @@ export type ImageSlot = {
 };
 
 export const SLOT_ROOT = "beckatex";
-export const MAX_PHOTOS = 8;
+export const MAX_PHOTOS = 10;
 
 export const slotSections: SlotSection[] = [
   { id: "productos", title: "Productos", width: 928, height: 1152, ratioLabel: "vertical 4:5" },

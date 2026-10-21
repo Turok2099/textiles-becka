@@ -80,7 +80,7 @@ export async function getUploadSignatures(slotId: string, count: number): Promis
   if (!isCloudinaryConfigured) return { ok: false, error: "Cloudinary no está configurado en el servidor." };
   const slot = findSlot(slotId);
   if (!slot) return { ok: false, error: "Categoría desconocida." };
-  if (!Number.isInteger(count) || count < 1 || count > MAX_PHOTOS) return { ok: false, error: "Elige entre 1 y 8 fotos." };
+  if (!Number.isInteger(count) || count < 1 || count > MAX_PHOTOS) return { ok: false, error: `Elige entre 1 y ${MAX_PHOTOS} fotos.` };
 
   let current: number;
   try {
@@ -89,7 +89,7 @@ export async function getUploadSignatures(slotId: string, count: number): Promis
     return { ok: false, error: "No se pudo consultar Cloudinary. Revisa tu conexión e inténtalo de nuevo." };
   }
   if (count > MAX_PHOTOS - current) {
-    return { ok: false, error: MAX_PHOTOS - current <= 0 ? "Has agregado las 8 fotos disponibles." : `Solo caben ${MAX_PHOTOS - current} foto(s) más en esta categoría.` };
+    return { ok: false, error: MAX_PHOTOS - current <= 0 ? `Has agregado las ${MAX_PHOTOS} fotos disponibles.` : `Solo caben ${MAX_PHOTOS - current} foto(s) más en esta categoría.` };
   }
 
   const now = Date.now();

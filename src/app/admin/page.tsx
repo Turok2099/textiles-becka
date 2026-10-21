@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { Suspense } from "react";
+import { LuArrowLeft } from "react-icons/lu";
 import { isAuthConfigured, requireAdmin } from "@/lib/auth";
 import { getUploadedImages, isCloudinaryConfigured } from "@/lib/cloudinary";
 import { imageSlots, MAX_PHOTOS, slotSections } from "@/lib/image-slots";
@@ -26,9 +28,14 @@ async function Panel() {
           <h1>Fotos de tu sitio</h1>
           <p className="admin-lead">Agrega fotos a cada categoría y elige cómo se mostrarán</p>
         </div>
-        <form action={logout}>
-          <button className="abtn" type="submit">Cerrar sesión</button>
-        </form>
+        <div className="admin-actions">
+          <Link className="abtn" href="/" prefetch={false}>
+            <LuArrowLeft aria-hidden="true" /> Volver al sitio
+          </Link>
+          <form action={logout}>
+            <button className="abtn" type="submit">Cerrar sesión</button>
+          </form>
+        </div>
       </header>
       {!isCloudinaryConfigured && (
         <p role="alert" className="admin-alert">Cloudinary no está configurado: faltan las variables CLOUDINARY_* en el servidor.</p>
