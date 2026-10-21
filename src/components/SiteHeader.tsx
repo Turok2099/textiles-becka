@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { site } from "@/lib/site";
 
@@ -5,13 +6,13 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="wrap header-inner">
-        <a className="brand" href="#inicio" aria-label={`${site.name}, inicio`}>
+        <Link className="brand" href="/" aria-label={`${site.name}, inicio`}>
           <Logo priority />
-        </a>
+        </Link>
         <nav aria-label="Navegación principal">
           <ul>
             {site.nav.map((item) => (
-              <li key={item.href}><a href={item.href}>{item.label}</a></li>
+              <li key={item.href}><Link href={item.href}>{item.label}</Link></li>
             ))}
           </ul>
         </nav>

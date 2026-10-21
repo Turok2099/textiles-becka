@@ -14,20 +14,24 @@ export const site = {
     cta: { label: "Explorar productos", href: "#productos" },
   },
   nav: [
-    { label: "Productos", href: "#productos" },
-    { label: "Clientes", href: "#clientes" },
-    { label: "Promocionales", href: "#promocionales" },
-    { label: "Servicios", href: "#servicios" },
-    { label: "Nosotros", href: "#nosotros" },
-    { label: "Contacto", href: "#contacto" },
+    { label: "Productos", href: "/#productos" },
+    { label: "Clientes", href: "/#clientes" },
+    { label: "Promocionales", href: "/#promocionales" },
+    { label: "Servicios", href: "/#servicios" },
+    { label: "Nosotros", href: "/nosotros" },
+    { label: "Contacto", href: "/#contacto" },
   ],
+  // Resumen de "Nosotros" en la portada. Texto proporcionado por la clienta; no añadir cifras, certificaciones ni promesas.
   about: {
-    title: "Beckatex",
-    // Propuesta editable. No incluye antigüedad, ubicación, capacidad ni certificaciones.
+    eyebrow: "Sobre BKTX",
+    title: "Tus ideas, la identidad de tu marca.",
     paragraphs: [
-      "Beckatex es un negocio de uniformes y productos textiles. Aquí reunimos lo que ofrecemos para que puedas conocerlo y consultarnos.",
-      "Para pedidos y catálogo, escríbenos por WhatsApp o síguenos en redes sociales.",
+      "En BKTX transformamos ideas en prendas y productos personalizados que representan la identidad de cada marca.",
+      "Fabricamos y personalizamos uniformes y prendas textiles, y ofrecemos productos promocionales para empresas, negocios e instituciones. Te acompañamos desde la selección de materiales y diseños hasta la confección y personalización de cada proyecto.",
     ],
+    link: { label: "Conoce más sobre BKTX", href: "/nosotros" },
+    // Foto real de la clienta (public/productos): prenda con letras bordadas.
+    image: { src: "/productos/deportivos.webp", width: 928, height: 1152, alt: "Chamarra tipo varsity azul con mangas blancas, rayas en cuello y puños, y letras bordadas en las mangas" },
   },
   contact: {
     description: "Escríbenos por WhatsApp o llámanos para pedidos y catálogo.",

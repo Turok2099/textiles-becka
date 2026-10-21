@@ -8,7 +8,7 @@ export function BusinessJsonLd() {
     "@type": "Organization",
     name: site.name,
     description: seo.description,
-    ...(siteUrl && { url: siteUrl, logo: `${siteUrl}/logo/beckatex-logo.png` }),
+    ...(siteUrl && { url: siteUrl, logo: `${siteUrl}/logo/bktx-logo.png` }),
     telephone: "+525545683821",
     sameAs: [site.social.instagram.href, site.social.tiktok.href],
   };

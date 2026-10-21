@@ -11,7 +11,7 @@ export function SiteFooter() {
       <div className="wrap footer-inner">
         <p className="brand"><Logo height={36} /></p>
         <nav aria-label="Navegación del pie de página">
-          <ul>{site.nav.map((i) => <li key={i.href}><a href={i.href}>{i.label}</a></li>)}</ul>
+          <ul>{site.nav.map((i) => <li key={i.href}><Link href={i.href}>{i.label}</Link></li>)}</ul>
         </nav>
         <nav aria-label="Redes sociales">
           <ul>

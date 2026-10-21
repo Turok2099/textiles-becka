@@ -1,13 +1,12 @@
 import Image from "next/image";
-import { site } from "@/lib/site";
 
 export function Logo({ height = 40, priority = false }: Readonly<{ height?: number; priority?: boolean }>) {
   return (
     <Image
       className="logo"
-      src="/logo/beckatex-logo.png"
-      alt={site.name}
-      width={Math.round(height * (900 / 328))}
+      src="/logo/bktx-logo.png"
+      alt="BKTX soluciones textiles"
+      width={Math.round(height * (1777 / 651))}
       height={height}
       priority={priority}
     />

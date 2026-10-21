@@ -27,7 +27,7 @@ npm run typecheck
 npm run build
 
 ## Marca
-Logo oficial en public/logo/beckatex-logo.png; iconos y miniatura social en src/app (icon.png, apple-icon.png, opengraph-image.png).
+Logo oficial en public/logo/bktx-logo.png (morado profundo, recortado sin márgenes); iconos y miniatura social en src/app (favicon, apple-touch-icon, opengraph-image).
 
 ## Pendiente de definir con el propietario
 Colores definitivos, público objetivo, líneas de productos, fotos propias y contacto real.
