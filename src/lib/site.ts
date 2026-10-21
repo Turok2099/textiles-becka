@@ -1,9 +1,9 @@
-// Datos comerciales de Beckatex. Editar aquí; los componentes solo leen este archivo.
+// Datos comerciales de BKTX. Editar aquí; los componentes solo leen este archivo.
 // Lo confirmado viene de las redes de la clienta (nombre "Becka uniformes", "Pedidos y catálogo",
 // enlace de WhatsApp en la bio de Instagram). Todo lo demás es propuesta editable.
 
 export const site = {
-  name: "Beckatex",
+  name: "BKTX",
   description:
     "Uniformes escolares, deportivos y empresariales, playeras y sudaderas personalizadas con bordado, sublimación o DTF. Pedidos y catálogo por WhatsApp.",
   hero: {
@@ -30,8 +30,7 @@ export const site = {
       "Fabricamos y personalizamos uniformes y prendas textiles, y ofrecemos productos promocionales para empresas, negocios e instituciones. Te acompañamos desde la selección de materiales y diseños hasta la confección y personalización de cada proyecto.",
     ],
     link: { label: "Conoce más sobre BKTX", href: "/nosotros" },
-    // Foto real de la clienta (public/productos): prenda con letras bordadas.
-    image: { src: "/productos/deportivos.webp", width: 928, height: 1152, alt: "Chamarra tipo varsity azul con mangas blancas, rayas en cuello y puños, y letras bordadas en las mangas" },
+    image: { src: "/nosotros/04-resumen-portada.png", width: 1122, height: 1402, alt: "Manos sosteniendo una chaqueta morada con el nombre BKTX bordado en el bolsillo, junto a una máquina de coser" },
   },
   contact: {
     description: "Escríbenos por WhatsApp o llámanos para pedidos y catálogo.",
@@ -45,7 +44,7 @@ export const site = {
     whatsapp: {
       label: "WhatsApp",
       number: "525520798115",
-      href: `https://wa.me/525520798115?text=${encodeURIComponent("Hola, quiero información sobre pedidos y catálogo de Beckatex.")}`,
+      href: `https://wa.me/525520798115?text=${encodeURIComponent("Hola, quiero información sobre pedidos y catálogo de BKTX.")}`,
     },
   },
 } as const;

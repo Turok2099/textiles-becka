@@ -14,7 +14,7 @@ export function Reviews() {
     >
       <div className="wrap">
         <h2 id="opiniones-titulo">Opiniones</h2>
-        <p className="lead">Lo que dicen quienes ya trabajaron con Beckatex.</p>
+        <p className="lead">Lo que dicen quienes ya trabajaron con BKTX.</p>
       </div>
       <div className="marquee">
         <div className="marquee-track">

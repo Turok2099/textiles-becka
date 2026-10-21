@@ -175,7 +175,7 @@ h3 { font-size: 1.125rem; font-weight: 600; }
   .hero-media { max-width: 22rem; box-shadow: 0.625rem 0.625rem 0 var(--sw1); }
   .section { padding-block: 3rem; }
   .about { grid-template-columns: 1fr; gap: 1.75rem; }
-  .about-photo { max-width: 100%; aspect-ratio: 1 / 1; object-position: center 12%; }
+  .about-photo { max-width: 100%; aspect-ratio: 4 / 5; }
   .footer-inner { grid-template-columns: 1fr; }
   .contact { grid-template-columns: 1fr; gap: 2rem; }
   .contact-form { padding: 1.25rem; }

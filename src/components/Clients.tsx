@@ -16,7 +16,7 @@ export function Clients() {
     <section id="clientes" className="section" aria-labelledby="clientes-titulo">
       <div className="wrap">
         <h2 id="clientes-titulo">Clientes</h2>
-        <p className="lead">Empresas que han confiado en Beckatex.</p>
+        <p className="lead">Empresas que han confiado en BKTX.</p>
       </div>
       <div className="marquee">
         <div className="marquee-track">

@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 
-// No hay servidor ni correo configurado: al enviar, el mensaje se abre listo en WhatsApp de Beckatex.
+// No hay servidor ni correo configurado: al enviar, el mensaje se abre listo en WhatsApp de BKTX.
 export function ContactForm({ whatsappNumber }: Readonly<{ whatsappNumber: string }>) {
   const [sent, setSent] = useState(false);
 
@@ -10,7 +10,7 @@ export function ContactForm({ whatsappNumber }: Readonly<{ whatsappNumber: strin
     e.preventDefault();
     const data = new FormData(e.currentTarget);
     const text = [
-      "Hola, quiero información de Beckatex.",
+      "Hola, quiero información de BKTX.",
       `Nombre: ${data.get("nombre")}`,
       `Correo: ${data.get("correo")}`,
       `Teléfono: ${data.get("telefono")}`,

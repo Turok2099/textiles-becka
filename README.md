@@ -1,4 +1,4 @@
-# Beckatex
+# BKTX
 
 Base inicial de Next.js con App Router, TypeScript y Tailwind CSS.
 
