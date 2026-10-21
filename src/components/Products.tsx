@@ -1,5 +1,6 @@
 import { LuChevronDown, LuGraduationCap, LuShirt, LuShoppingBag, LuStethoscope, LuTrophy, LuWind } from "react-icons/lu";
 import Image from "next/image";
+import { getUploadedImages } from "@/lib/cloudinary";
 import { products, productsCover } from "@/lib/products";
 
 const icons: Record<string, React.ReactNode> = {
@@ -13,7 +14,9 @@ const icons: Record<string, React.ReactNode> = {
 
 const VISIBLE = 6;
 
-export function Products() {
+export async function Products() {
+  // Imágenes subidas desde /admin; si una categoría no tiene, se usa la local de products.ts.
+  const uploaded = await getUploadedImages();
   return (
     <section id="productos" className="section tint" aria-labelledby="productos-titulo">
       <div className="wrap">
@@ -29,10 +32,12 @@ export function Products() {
           </div>
         </div>
         <ul className="grid product-grid">
-          {products.map((c) => (
+          {products.map((c) => {
+            const image = uploaded[c.id] ?? c.image;
+            return (
             <li key={c.id} className="card product-card">
-              {c.image && (
-                <Image className="product-media" src={c.image.src} alt={c.image.alt} width={c.image.width} height={c.image.height} sizes="(min-width: 40rem) 22rem, 100vw" />
+              {image && (
+                <Image className="product-media" src={image.src} alt={image.alt} width={image.width} height={image.height} sizes="(min-width: 40rem) 22rem, 100vw" />
               )}
               <div className="product-head">
                 <span className="product-icon" aria-hidden="true">{icons[c.id]}</span>
@@ -53,7 +58,8 @@ export function Products() {
                 </details>
               )}
             </li>
-          ))}
+            );
+          })}
         </ul>
       </div>
     </section>

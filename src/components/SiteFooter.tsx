@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa6";
+import { LuLock } from "react-icons/lu";
 import { Logo } from "@/components/Logo";
 import { site } from "@/lib/site";
 
@@ -26,7 +28,10 @@ export function SiteFooter() {
             ))}
           </ul>
         </nav>
-        <p className="copy">© {site.name}</p>
+        <p className="copy">
+          © {site.name}
+          <Link className="admin-link" href="/admin/login" prefetch={false} aria-label="Acceso administrador"><LuLock aria-hidden="true" /></Link>
+        </p>
       </div>
     </footer>
   );

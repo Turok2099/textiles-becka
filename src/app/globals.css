@@ -178,3 +178,28 @@ h3 { font-size: 1.125rem; font-weight: 600; }
   .marquee-track { animation: none; }
   .marquee-group[aria-hidden="true"] { display: none; }
 }
+
+/* Panel privado /admin */
+.admin { min-height: 100vh; background: var(--tint); }
+.admin-page, .admin-login { width: min(1120px, calc(100% - 2.5rem)); margin-inline: auto; padding-block: 2.5rem; }
+.admin-login { max-width: 26rem; }
+.admin-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+.admin-head h1 { margin: 0; font-size: clamp(1.75rem, 4vw, 2.5rem); }
+.admin-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); }
+.admin-card { padding: 0 0 1.25rem; overflow: hidden; }
+.admin-card h3, .admin-card > p { margin-inline: 1.25rem; }
+.admin-thumb { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; background: var(--ph-bg); }
+.admin-upload { display: grid; gap: 0.75rem; margin: 1rem 1.25rem 0; }
+.admin-form { display: grid; gap: 1rem; }
+.admin-form label, .admin-upload label { display: grid; gap: 0.375rem; font-size: 0.875rem; font-weight: 600; }
+.admin input[type="text"], .admin input[type="password"], .admin textarea { width: 100%; padding: 0.625rem 0.75rem; font: inherit; font-weight: 400; color: var(--foreground); background: #fff; border: 1px solid var(--line); border-radius: 0.375rem; }
+.admin input:focus-visible, .admin textarea:focus-visible, .admin button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.admin-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.admin-actions .button { flex: 1 1 auto; }
+.admin button:disabled { opacity: 0.6; cursor: wait; }
+.admin-error { margin: 0; color: #b00020; font-size: 0.875rem; font-weight: 600; }
+.admin-ok { margin: 0; color: #1b6b3a; font-size: 0.875rem; font-weight: 600; }
+
+/* Acceso discreto al panel privado, junto al © del pie */
+.site-footer .admin-link { margin-left: 0.5rem; padding: 0.5rem; vertical-align: middle; font-size: 0.8rem; color: var(--muted); opacity: 0.35; }
+.site-footer .admin-link:hover, .site-footer .admin-link:focus-visible { opacity: 1; }
