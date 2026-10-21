@@ -2,6 +2,7 @@ import "server-only";
 import { createHmac, scryptSync, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 
 // Sesión de una sola persona: usuario y contraseña (hash scrypt) en variables de entorno,
 // cookie httpOnly firmada con HMAC. Sin base de datos. Ver scripts/hash-password.mjs.
@@ -63,6 +64,8 @@ export async function hasSession() {
   if (!value) return false;
   const [payload, signature] = value.split(".");
   if (!payload || !signature || !safeEqual(signature, hmac(payload))) return false;
+  // La caducidad depende de la hora actual: se evalúa siempre en la petición, nunca al prerenderizar.
+  await connection();
   try {
     const { exp } = JSON.parse(Buffer.from(payload, "base64url").toString()) as { exp: number };
     return typeof exp === "number" && exp > Date.now();
