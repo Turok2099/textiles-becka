@@ -4,8 +4,8 @@ import { updateTag } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { assertAdmin, createSession, credentialsAreValid, destroySession } from "@/lib/auth";
-import { createUploadSignature, deleteUploadedImage, IMAGES_TAG, isCloudinaryConfigured } from "@/lib/cloudinary";
-import { findSlot } from "@/lib/image-slots";
+import { countSlotPhotos, createUploadSignature, deleteUploadedImage, IMAGES_TAG, isCloudinaryConfigured } from "@/lib/cloudinary";
+import { findSlot, MAX_PHOTOS } from "@/lib/image-slots";
 
 export type LoginState = { error?: string };
 
@@ -41,35 +41,54 @@ export async function logout() {
   redirect("/admin/login");
 }
 
-export type SignatureResult =
-  | { ok: true; url: string; fields: Record<string, string | number> }
+export type SignaturesResult =
+  | { ok: true; uploads: { url: string; fields: Record<string, string | number> }[] }
   | { ok: false; error: string };
 
-// Paso 1 de la subida: valida ranura y texto alternativo y devuelve la firma para Cloudinary.
-export async function getUploadSignature(slotId: string, alt: string): Promise<SignatureResult> {
+// Paso 1 de la subida: valida ranura y cupo y devuelve una firma por foto para Cloudinary.
+export async function getUploadSignatures(slotId: string, count: number, alt: string): Promise<SignaturesResult> {
   await assertAdmin();
   if (!isCloudinaryConfigured) return { ok: false, error: "Cloudinary no está configurado en el servidor." };
   const slot = findSlot(slotId);
   if (!slot) return { ok: false, error: "Sección desconocida." };
+  if (!Number.isInteger(count) || count < 1) return { ok: false, error: "Elige al menos una foto." };
+
+  let current: number;
+  try {
+    current = await countSlotPhotos(slot);
+  } catch {
+    return { ok: false, error: "No se pudo consultar Cloudinary. Inténtalo de nuevo." };
+  }
+  const room = MAX_PHOTOS - current;
+  if (count > room) {
+    return {
+      ok: false,
+      error: room <= 0 ? `Esta sección ya tiene el máximo de ${MAX_PHOTOS} fotos. Borra alguna para subir otra.` : `Solo caben ${room} foto(s) más en esta sección (máximo ${MAX_PHOTOS}).`,
+    };
+  }
+
   const cleanAlt = alt.trim().slice(0, 200);
-  if (!cleanAlt) return { ok: false, error: "Describe la imagen en el texto alternativo." };
-  return { ok: true, ...createUploadSignature(slot, cleanAlt) };
+  const uploads = Array.from({ length: count }, (_, i) => {
+    const text = cleanAlt ? (count > 1 ? `${cleanAlt} (${i + 1})` : cleanAlt) : `${slot.label}, foto ${current + i + 1}`;
+    return createUploadSignature(slot, text);
+  });
+  return { ok: true, uploads };
 }
 
-// Paso 2: el navegador ya subió el archivo; renueva la caché para que el sitio lo muestre de inmediato.
+// Paso 2: el navegador ya subió las fotos; renueva la caché para que el sitio las muestre de inmediato.
 export async function confirmUpload() {
   await assertAdmin();
   updateTag(IMAGES_TAG);
 }
 
-export async function restoreOriginal(slotId: string): Promise<{ ok: boolean; error?: string }> {
+export async function deletePhoto(slotId: string, publicId: string): Promise<{ ok: boolean; error?: string }> {
   await assertAdmin();
   const slot = findSlot(slotId);
   if (!slot) return { ok: false, error: "Sección desconocida." };
   try {
-    await deleteUploadedImage(slot);
+    await deleteUploadedImage(slot, publicId);
   } catch {
-    return { ok: false, error: "No se pudo restaurar la imagen original. Inténtalo de nuevo." };
+    return { ok: false, error: "No se pudo borrar la foto. Inténtalo de nuevo." };
   }
   updateTag(IMAGES_TAG);
   return { ok: true };

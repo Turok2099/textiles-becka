@@ -1,7 +1,7 @@
 import "server-only";
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { cacheLife, cacheTag } from "next/cache";
-import { imageSlots, SLOT_FOLDER, type ImageSlot, type SlotImage } from "@/lib/image-slots";
+import { imageSlots, SLOT_FOLDER, type ImageSlot, type UploadedImage } from "@/lib/image-slots";
 
 export const IMAGES_TAG = "imagenes";
 
@@ -15,43 +15,57 @@ export const isCloudinaryConfigured = Boolean(cloudName && apiKey && apiSecret);
 const apiBase = `https://api.cloudinary.com/v1_1/${cloudName}`;
 const authHeader = `Basic ${Buffer.from(`${apiKey}:${apiSecret}`).toString("base64")}`;
 
-type Resource = { public_id: string; version: number; context?: { custom?: { alt?: string } } };
+type Resource = { public_id: string; version: number; created_at: string; context?: { custom?: { alt?: string } } };
 
-function imageUrl(slot: ImageSlot, version: number) {
+function imageUrl(slot: ImageSlot, version: number, publicId: string) {
   const t = `c_fill,g_auto,w_${slot.width},h_${slot.height},f_auto,q_auto`;
-  return `https://res.cloudinary.com/${cloudName}/image/upload/${t}/v${version}/${slot.publicId}`;
+  return `https://res.cloudinary.com/${cloudName}/image/upload/${t}/v${version}/${publicId}`;
 }
 
-// Imágenes subidas por ranura (id de ranura → imagen). Vacío si no hay Cloudinary o falla la consulta.
-// El resultado se guarda en caché y se renueva al subir o restaurar (updateTag) o cada pocas horas.
-export async function getUploadedImages(): Promise<Record<string, SlotImage>> {
+async function listResources(): Promise<Resource[]> {
+  const url = `${apiBase}/resources/image/upload?prefix=${encodeURIComponent(`${SLOT_FOLDER}/`)}&context=true&max_results=500`;
+  const res = await fetch(url, { headers: { Authorization: authHeader }, cache: "no-store" });
+  if (!res.ok) throw new Error(`Cloudinary respondió ${res.status}`);
+  return ((await res.json()) as { resources: Resource[] }).resources;
+}
+
+function groupBySlot(resources: Resource[]): Record<string, UploadedImage[]> {
+  const out: Record<string, UploadedImage[]> = {};
+  for (const slot of imageSlots) {
+    out[slot.id] = resources
+      .filter((r) => r.public_id.startsWith(`${slot.folder}/`))
+      .sort((a, b) => a.created_at.localeCompare(b.created_at)) // orden de subida: la primera es la portada
+      .map((r, i) => ({
+        publicId: r.public_id,
+        src: imageUrl(slot, r.version, r.public_id),
+        width: slot.width,
+        height: slot.height,
+        alt: r.context?.custom?.alt?.trim() || `${slot.label}, foto ${i + 1}`,
+      }));
+  }
+  return out;
+}
+
+// Fotos subidas por ranura (id de ranura → fotos en orden). Vacío si no hay Cloudinary o falla la consulta.
+// El resultado se guarda en caché y se renueva al subir o borrar (updateTag) o cada pocas horas.
+export async function getUploadedImages(): Promise<Record<string, UploadedImage[]>> {
   "use cache";
   cacheTag(IMAGES_TAG);
   cacheLife("hours");
 
   if (!isCloudinaryConfigured) return {};
   try {
-    const url = `${apiBase}/resources/image/upload?prefix=${encodeURIComponent(`${SLOT_FOLDER}/`)}&context=true&max_results=100`;
-    const res = await fetch(url, { headers: { Authorization: authHeader } });
-    if (!res.ok) throw new Error(`Cloudinary respondió ${res.status}`);
-    const { resources } = (await res.json()) as { resources: Resource[] };
-    const out: Record<string, SlotImage> = {};
-    for (const slot of imageSlots) {
-      const r = resources.find((x) => x.public_id === slot.publicId);
-      if (!r) continue;
-      out[slot.id] = {
-        src: imageUrl(slot, r.version),
-        width: slot.width,
-        height: slot.height,
-        alt: r.context?.custom?.alt?.trim() || slot.fallback.alt,
-      };
-    }
-    return out;
+    return groupBySlot(await listResources());
   } catch (error) {
     console.error("No se pudieron leer las imágenes de Cloudinary:", error);
     cacheLife("minutes"); // no fijar el fallo durante horas
     return {};
   }
+}
+
+// Cuántas fotos tiene hoy una ranura, consultando Cloudinary directamente (sin caché).
+export async function countSlotPhotos(slot: ImageSlot): Promise<number> {
+  return (groupBySlot(await listResources())[slot.id] ?? []).length;
 }
 
 // Valor del campo `context` de Cloudinary: "alt=texto" con = | \ escapados.
@@ -67,14 +81,13 @@ function sign(params: Record<string, string | number>) {
   return createHash("sha1").update(toSign + apiSecret).digest("hex");
 }
 
-// Datos firmados para que el navegador suba la imagen directo a Cloudinary (el secreto no sale del servidor).
+// Datos firmados para que el navegador suba una foto directo a Cloudinary (el secreto no sale del servidor).
+// Cada foto lleva un identificador único dentro de la carpeta de su ranura.
 export function createUploadSignature(slot: ImageSlot, alt: string) {
   const params = {
     allowed_formats: "jpg,jpeg,png,webp",
     context: contextValue(alt),
-    invalidate: "true",
-    overwrite: "true",
-    public_id: slot.publicId,
+    public_id: `${slot.folder}/${Date.now().toString(36)}-${randomBytes(3).toString("hex")}`,
     timestamp: Math.floor(Date.now() / 1000),
   };
   return {
@@ -83,9 +96,10 @@ export function createUploadSignature(slot: ImageSlot, alt: string) {
   };
 }
 
-// Borra la imagen subida de una ranura; el sitio vuelve a usar la imagen local de respaldo.
-export async function deleteUploadedImage(slot: ImageSlot) {
-  const res = await fetch(`${apiBase}/resources/image/upload?public_ids[]=${encodeURIComponent(slot.publicId)}&invalidate=true`, {
+// Borra una foto de la galería de una ranura. Solo acepta identificadores dentro de la carpeta de esa ranura.
+export async function deleteUploadedImage(slot: ImageSlot, publicId: string) {
+  if (!publicId.startsWith(`${slot.folder}/`) || publicId.includes("..")) throw new Error("Foto no válida");
+  const res = await fetch(`${apiBase}/resources/image/upload?public_ids[]=${encodeURIComponent(publicId)}&invalidate=true`, {
     method: "DELETE",
     headers: { Authorization: authHeader },
   });

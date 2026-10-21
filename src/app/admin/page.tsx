@@ -1,8 +1,8 @@
-import Image from "next/image";
 import { Suspense } from "react";
+import { ProductCarousel } from "@/components/ProductCarousel";
 import { isAuthConfigured, requireAdmin } from "@/lib/auth";
 import { getUploadedImages, isCloudinaryConfigured } from "@/lib/cloudinary";
-import { imageSlots } from "@/lib/image-slots";
+import { imageSlots, MAX_PHOTOS } from "@/lib/image-slots";
 import { logout } from "./actions";
 import { UploadSlot } from "./UploadSlot";
 
@@ -32,17 +32,18 @@ async function Panel() {
       {!isAuthConfigured && <p role="alert" className="admin-error">Faltan variables de acceso.</p>}
       <section aria-labelledby="productos-admin">
         <h2 id="productos-admin">Productos</h2>
-        <p className="lead">Sube una foto por categoría. Se recorta automáticamente a formato vertical (4:5), así que cualquier foto encaja. Formatos: JPG, PNG o WebP, hasta 10 MB.</p>
+        <p className="lead">
+          Cada categoría es un carrusel de hasta {MAX_PHOTOS} fotos. La primera que subas es la que se ve primero en el sitio.
+          Las fotos se recortan solas a formato vertical (4:5), así que cualquiera encaja. Formatos: JPG, PNG o WebP, hasta 10 MB cada una.
+        </p>
         <ul className="admin-grid">
           {imageSlots.map((slot) => {
-            const current = uploaded[slot.id];
-            const shown = current ?? slot.fallback;
+            const photos = uploaded[slot.id] ?? [];
             return (
               <li key={slot.id} className="card admin-card">
-                <Image className="admin-thumb" src={shown.src} alt={shown.alt} width={shown.width} height={shown.height} sizes="20rem" />
+                <ProductCarousel photos={photos.length ? photos : [slot.fallback]} name={slot.label} sizes="20rem" />
                 <h3>{slot.label}</h3>
-                <p>{current ? "Imagen subida por ti" : "Imagen original del sitio"}</p>
-                <UploadSlot slotId={slot.id} defaultAlt={shown.alt} hasUpload={Boolean(current)} />
+                <UploadSlot slotId={slot.id} photos={photos.map(({ publicId, src, alt }) => ({ publicId, src, alt }))} max={MAX_PHOTOS} />
               </li>
             );
           })}
