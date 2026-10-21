@@ -8,9 +8,16 @@ export const site = {
     "Uniformes escolares, deportivos y empresariales, playeras y sudaderas personalizadas con bordado, sublimación o DTF. Pedidos y catálogo por WhatsApp.",
   hero: {
     eyebrow: "Uniformes y textiles",
-    title: "Uniformes y productos textiles personalizados, tu idea en cada detalle",
-    image: { src: "/productos/hero.webp", width: 928, height: 1152, alt: "Collage de uniformes personalizados: camisas de trabajo, chamarra softshell, sudadera con capucha roja y gorras negras, todas con logotipos bordados" },
-    description: "Conoce lo que ofrecemos y escríbenos para pedidos y catálogo.",
+    title:
+      "Uniformes y productos textiles personalizados, tu idea en cada detalle",
+    image: {
+      src: "/productos/hero.webp",
+      width: 928,
+      height: 1152,
+      alt: "Collage de uniformes personalizados: camisas de trabajo, chamarra softshell, sudadera con capucha roja y gorras negras, todas con logotipos bordados",
+    },
+    description:
+      "Conoce lo que ofrecemos y escríbenos para pedidos y catálogo.",
     cta: { label: "Explorar productos", href: "#productos" },
   },
   nav: [
@@ -30,7 +37,12 @@ export const site = {
       "Fabricamos y personalizamos uniformes y prendas textiles, y ofrecemos productos promocionales para empresas, negocios e instituciones. Te acompañamos desde la selección de materiales y diseños hasta la confección y personalización de cada proyecto.",
     ],
     link: { label: "Conoce más sobre BKTX", href: "/nosotros" },
-    image: { src: "/nosotros/04-resumen-portada.png", width: 1122, height: 1402, alt: "Manos sosteniendo una chaqueta morada con el nombre BKTX bordado en el bolsillo, junto a una máquina de coser" },
+    image: {
+      src: "/nosotros/04-resumen-portada.png",
+      width: 1122,
+      height: 1402,
+      alt: "Manos sosteniendo una chaqueta morada con el nombre BKTX bordado en el bolsillo, junto a una máquina de coser",
+    },
   },
   contact: {
     description: "Escríbenos por WhatsApp o llámanos para pedidos y catálogo.",
@@ -38,8 +50,16 @@ export const site = {
     phone: { label: "+52 55 4568 3821", href: "tel:+525545683821" },
   },
   social: {
-    instagram: { label: "Instagram", handle: "@beckauniformes", href: "https://www.instagram.com/beckauniformes/" },
-    tiktok: { label: "TikTok", handle: "@rebecaat0", href: "https://www.tiktok.com/@rebecaat0" },
+    instagram: {
+      label: "Instagram",
+      handle: "@beckauniformes",
+      href: "https://www.instagram.com/bktxsolucionestextiles/",
+    },
+    tiktok: {
+      label: "TikTok",
+      handle: "@rebecaat0",
+      href: "https://www.tiktok.com/@rebecaat0",
+    },
     // Número confirmado por el equipo: +52 55 2079 8115.
     whatsapp: {
       label: "WhatsApp",
