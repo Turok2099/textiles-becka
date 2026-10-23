@@ -1,18 +1,19 @@
-import Image from "next/image";
+import { CloudImage } from "@/components/CloudImage";
 
-// Se declara el tamaño real del archivo (1777 × 651) y el CSS (.logo) fija el tamaño visible. El atributo `sizes` le dice a
-// Next el ancho máximo al que se muestra (hasta ~153 px en celular) para que genere variantes con resolución suficiente
-// para pantallas de alta densidad; con quality 90 se conservan los bordes nítidos del logotipo.
+// Se declara el tamaño real del archivo (1777 × 651) y el CSS (.logo) fija el tamaño visible (hasta ~153 px en celular).
+// Cloudinary entrega variantes de 160, 320 y 480 px (pantallas de alta densidad) con calidad "good" para conservar los bordes.
 export function Logo({ priority = false }: Readonly<{ priority?: boolean }>) {
   return (
-    <Image
+    <CloudImage
       className="logo"
       src="/logo/bktx-logo.png"
       alt="BKTX soluciones textiles"
       width={1777}
       height={651}
       sizes="160px"
-      quality={90}
+      widths={[160, 320, 480]}
+      quality="auto:good"
+      fallbackQuality={90}
       priority={priority}
     />
   );

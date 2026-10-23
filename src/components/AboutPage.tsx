@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { CloudImage } from "@/components/CloudImage";
 import Link from "next/link";
 import { LuArrowRight } from "react-icons/lu";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -25,7 +25,7 @@ export function AboutPage() {
               <p className="nos-intro">{hero.intro}</p>
               <p className="nos-extra">{hero.extra}</p>
             </div>
-            <Image className="nos-photo" src={hero.image.src} alt={hero.image.alt} width={hero.image.width} height={hero.image.height} sizes="(min-width: 47.5rem) 36rem, 92vw" priority />
+            <CloudImage className="nos-photo" src={hero.image.src} alt={hero.image.alt} width={hero.image.width} height={hero.image.height} sizes="(min-width: 47.5rem) 36rem, 92vw" priority />
           </div>
         </section>
 
@@ -48,7 +48,7 @@ export function AboutPage() {
               <p className="nos-text">{idea.text}</p>
               <p className="nos-text nos-text-2">{idea.extra}</p>
             </div>
-            <Image className="nos-photo" src={idea.image.src} alt={idea.image.alt} width={idea.image.width} height={idea.image.height} sizes="(min-width: 47.5rem) 36rem, 92vw" />
+            <CloudImage className="nos-photo" src={idea.image.src} alt={idea.image.alt} width={idea.image.width} height={idea.image.height} sizes="(min-width: 47.5rem) 36rem, 92vw" />
           </div>
         </section>
 
@@ -59,7 +59,7 @@ export function AboutPage() {
               <h2 id="nos-mas-alla">{beyond.title}</h2>
               <p className="nos-text">{beyond.text}</p>
             </div>
-            <Image className="nos-photo" src={beyond.image.src} alt={beyond.image.alt} width={beyond.image.width} height={beyond.image.height} sizes="(min-width: 47.5rem) 42rem, 92vw" />
+            <CloudImage className="nos-photo" src={beyond.image.src} alt={beyond.image.alt} width={beyond.image.width} height={beyond.image.height} sizes="(min-width: 47.5rem) 42rem, 92vw" />
           </div>
         </section>
 

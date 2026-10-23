@@ -1,9 +1,11 @@
-import { LuChevronDown, LuGraduationCap, LuShirt, LuShoppingBag, LuStethoscope, LuTrophy, LuWind } from "react-icons/lu";
+import Link from "next/link";
+import { LuArrowRight, LuChevronDown, LuGraduationCap, LuShirt, LuShoppingBag, LuStethoscope, LuTrophy, LuWind } from "react-icons/lu";
 import Image from "next/image";
 import { CardCarousel } from "@/components/CardCarousel";
 import { getUploadedImages } from "@/lib/cloudinary";
 import { slotId, toCarousel } from "@/lib/image-slots";
 import { products, productsCover } from "@/lib/products";
+import { topicForSlot } from "@/lib/topics";
 
 const icons: Record<string, React.ReactNode> = {
   casual: <LuShirt />,
@@ -37,6 +39,7 @@ export async function Products() {
           {products.map((c) => {
             // Fotos subidas desde /admin; sin ninguna, la imagen local de products.ts.
             const mine = uploaded[slotId("productos", c.id)];
+            const topic = topicForSlot(slotId("productos", c.id));
             const photos = mine?.length ? toCarousel(mine) : c.image ? [c.image] : [];
             return (
             <li key={c.id} className="card product-card">
@@ -58,6 +61,11 @@ export async function Products() {
                     {c.items.slice(VISIBLE).map((item) => <li key={item}>{item}</li>)}
                   </ul>
                 </details>
+              )}
+              {topic && (
+                <Link className="card-link" href={`/${topic.slug}`}>
+                  Más sobre {topic.name.toLowerCase()} <LuArrowRight aria-hidden="true" />
+                </Link>
               )}
             </li>
             );

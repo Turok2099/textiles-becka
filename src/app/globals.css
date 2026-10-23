@@ -152,6 +152,7 @@ h3 { font-size: 1.125rem; font-weight: 600; }
 .site-footer .brand { margin: 0; }
 .site-footer .social-link { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0; border: 1px solid var(--line); border-radius: 50%; font-size: 1.25rem; }
 .site-footer .social-link:hover { background: var(--foreground); border-color: var(--foreground); color: var(--on-dark); }
+.footer-topics { grid-column: 1 / -1; }
 .copy { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 0.8125rem; }
 
 .wa-float { position: fixed; right: 1rem; bottom: 1rem; z-index: 15; display: grid; place-items: center; width: 3.75rem; height: 3.75rem; border-radius: 50%; background: #25a244; color: #fff; box-shadow: 0 4px 14px #0004; }
@@ -272,3 +273,44 @@ h3 { font-size: 1.125rem; font-weight: 600; }
 .nos .nos-side { max-width: 26rem; margin: 0; padding-top: 0.35rem; font-size: 1rem; line-height: 1.7; color: var(--muted); }
 .nos .nos-text-2 { margin-top: 1.25rem; }
 @media (max-width: 760px) { .nos .nos-what .nos-two { grid-template-columns: 1fr; } }
+
+/* Páginas por producto y servicio */
+.topic-hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 3rem; align-items: center; padding-block: 3rem 4.5rem; }
+.topic-hero.no-media { grid-template-columns: minmax(0, 46rem); }
+.topic-hero h1 { font-size: clamp(2.1rem, 5vw, 3.5rem); text-wrap: balance; }
+.topic-hero .lead { max-width: 38rem; }
+.topic-media { width: 100%; max-width: 28rem; justify-self: center; }
+.breadcrumb ol { display: flex; flex-wrap: wrap; gap: 0 0.5rem; margin: 0 0 1.25rem; font-size: 0.875rem; color: var(--muted); }
+.breadcrumb li + li::before { content: "/"; margin-right: 0.5rem; }
+.breadcrumb a { display: inline-block; padding-block: 0.5rem; text-decoration: underline; text-underline-offset: 0.25em; }
+.breadcrumb a:hover { color: var(--accent); }
+.topic-tags { margin-top: 0.5rem; }
+.topic-tags li { padding: 0.375rem 0.875rem; background: var(--card); border: 1px solid var(--line); }
+.topic-cover { display: block; width: 100%; height: auto; margin: 0 0 2rem; border-radius: 0.75rem; }
+.topic-sections { padding-block: 2rem; }
+.topic-cols { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 1rem clamp(2rem, 5vw, 4rem); align-items: start; }
+.topic-sections .topic-cols { padding-block: 2.25rem; border-top: 1px solid var(--line); }
+.topic-sections .topic-cols:first-child { border-top: 0; }
+.topic-cols h2 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.25rem); text-wrap: balance; }
+.topic-copy { max-width: 65ch; }
+.topic-copy p { margin: 0 0 1rem; color: var(--muted); font-size: 1.0625rem; line-height: 1.75; }
+.topic-copy p:last-child { margin-bottom: 0; }
+.topic-checklist { display: grid; gap: 0.75rem; margin: 0 0 1.25rem; }
+.topic-checklist li { position: relative; padding-left: 1.75rem; color: var(--foreground); line-height: 1.5; }
+.topic-checklist li::before { content: ""; position: absolute; left: 0.125rem; top: 0.2em; width: 0.5rem; height: 0.875rem; border: solid var(--accent); border-width: 0 2px 2px 0; rotate: 45deg; }
+.topic-note { max-width: 36rem; margin: 0 0 1.5rem; color: var(--muted); font-size: 0.9375rem; }
+.topic-related { grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); }
+.topic-related-card { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.25rem; background: var(--card); border: 1px solid var(--line); border-radius: 0.75rem; }
+.topic-related-card h3 { margin: 0; }
+.topic-related-card h3 a:hover { color: var(--accent); }
+.topic-related-card p { flex: 1; margin: 0; color: var(--muted); font-size: 0.9375rem; }
+.card-link { display: inline-flex; align-items: center; gap: 0.375rem; min-height: 2.75rem; margin-top: auto; font-size: 0.9375rem; font-weight: 700; color: var(--accent); text-decoration: underline; text-underline-offset: 0.3em; }
+.card-link svg { flex: none; transition: transform 0.15s; }
+.card-link:hover svg { transform: translateX(3px); }
+.product-card .card-link { padding-top: 0.5rem; }
+@media (prefers-reduced-motion: reduce) { .card-link svg { transition: none; } }
+@media (max-width: 760px) {
+  .topic-hero { grid-template-columns: 1fr; gap: 2rem; padding-block: 1.5rem 3rem; }
+  .topic-cols { grid-template-columns: 1fr; }
+  .topic-sections .topic-cols { padding-block: 1.75rem; }
+}

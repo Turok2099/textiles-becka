@@ -1,8 +1,10 @@
-import { LuLayers, LuPalette, LuPenTool, LuShirt, LuSpline } from "react-icons/lu";
+import Link from "next/link";
+import { LuArrowRight, LuLayers, LuPalette, LuPenTool, LuShirt, LuSpline } from "react-icons/lu";
 import { CardCarousel } from "@/components/CardCarousel";
 import { getUploadedImages } from "@/lib/cloudinary";
 import { slotId, toCarousel } from "@/lib/image-slots";
 import { services } from "@/lib/services";
+import { topicForSlot } from "@/lib/topics";
 
 const icons: Record<string, React.ReactNode> = {
   sublimacion: <LuPalette />,
@@ -20,6 +22,7 @@ export async function Services() {
       <h2 id="servicios-titulo">Servicios de personalización</h2>
       <ul className="grid product-grid">
         {services.map((s) => {
+          const topic = topicForSlot(slotId("servicios", s.id));
           const photos = toCarousel(uploaded[slotId("servicios", s.id)] ?? []);
           return (
             <li key={s.id} className="card product-card">
@@ -29,6 +32,11 @@ export async function Services() {
                 <h3>{s.name}</h3>
               </div>
               <p>{s.description}</p>
+              {topic && (
+                <Link className="card-link" href={`/${topic.slug}`}>
+                  Más sobre {topic.name.toLowerCase()} <LuArrowRight aria-hidden="true" />
+                </Link>
+              )}
             </li>
           );
         })}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Analytics } from "@/components/Analytics";
 import { BusinessJsonLd } from "@/components/BusinessJsonLd";
+import { socialImage } from "@/lib/cloud-site";
 import { isIndexable, seo, siteUrl } from "@/lib/seo";
 import { site } from "@/lib/site";
 import "./globals.css";
@@ -18,8 +19,14 @@ export const metadata: Metadata = {
     siteName: site.name,
     locale: "es_MX",
     type: "website",
+    ...(socialImage && { images: [socialImage] }),
   },
-  twitter: { card: "summary_large_image", title: `${seo.title} | ${site.name}`, description: seo.description },
+  twitter: {
+    card: "summary_large_image",
+    title: `${seo.title} | ${site.name}`,
+    description: seo.description,
+    ...(socialImage && { images: [socialImage] }),
+  },
   ...(seo.googleVerification && { verification: { google: seo.googleVerification } }),
 };
 

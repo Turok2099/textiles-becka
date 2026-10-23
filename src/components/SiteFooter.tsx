@@ -3,6 +3,7 @@ import { FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa6";
 import { LuLock } from "react-icons/lu";
 import { Logo } from "@/components/Logo";
 import { site } from "@/lib/site";
+import { topics } from "@/lib/topics";
 
 export function SiteFooter() {
   const { whatsapp, instagram, tiktok } = site.social;
@@ -27,6 +28,9 @@ export function SiteFooter() {
               </li>
             ))}
           </ul>
+        </nav>
+        <nav className="footer-topics" aria-label="Productos y servicios">
+          <ul>{topics.map((t) => <li key={t.slug}><Link href={`/${t.slug}`}>{t.name}</Link></li>)}</ul>
         </nav>
         <p className="copy">
           © {site.name}

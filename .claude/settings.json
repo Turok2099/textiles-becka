@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"c:/Programacion Local/Nuevos_Sitios/textiles-becka\"; cat .env.example; echo ---; sed 's/=.*/=<oculto>/' .env.local; echo ---; cat src/components/Contact.tsx src/components/SiteFooter.tsx | head -80; grep -n \"title\\\\|intro\" src/lib/nosotros.ts | head -12)",
+      "Bash(node --env-file=.env.local scripts/upload-site-images.mjs)"
+    ]
+  }
+}

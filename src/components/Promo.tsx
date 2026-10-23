@@ -1,5 +1,6 @@
 import { LuBadge, LuCoffee, LuCupSoda, LuGlassWater, LuNotebookPen } from "react-icons/lu";
 import Image from "next/image";
+import Link from "next/link";
 import { CardCarousel } from "@/components/CardCarousel";
 import { getUploadedImages } from "@/lib/cloudinary";
 import { slotId, toCarousel } from "@/lib/image-slots";
@@ -25,7 +26,10 @@ export async function Promo() {
             <p className="eyebrow">Con tu marca</p>
             <h2 id="promo-titulo">Artículos promocionales</h2>
             <p className="lead">Termos, tazas, libretas, plumas y más para regalar y dar a conocer tu marca.</p>
-            <a className="button" href="#contacto">Cotiza tus promocionales</a>
+            <div className="actions">
+              <a className="button" href="#contacto">Cotiza tus promocionales</a>
+              <Link className="button outline" href="/articulos-promocionales">Ver más</Link>
+            </div>
           </div>
         </div>
         <ul className="grid product-grid">
