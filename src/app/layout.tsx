@@ -6,14 +6,16 @@ import { isIndexable, seo, siteUrl } from "@/lib/seo";
 import { site } from "@/lib/site";
 import "./globals.css";
 
+const homeTitle = `${site.name} | ${seo.title}`;
+
 export const metadata: Metadata = {
   ...(siteUrl && { metadataBase: new URL(siteUrl) }),
-  title: { default: `${seo.title} | ${site.name}`, template: `%s | ${site.name}` },
+  title: { default: homeTitle, template: `%s | ${site.name}` },
   description: seo.description,
   alternates: { canonical: "/" },
   robots: isIndexable ? { index: true, follow: true } : { index: false, follow: false },
   openGraph: {
-    title: `${seo.title} | ${site.name}`,
+    title: homeTitle,
     description: seo.description,
     url: "/",
     siteName: site.name,
@@ -23,7 +25,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${seo.title} | ${site.name}`,
+    title: homeTitle,
     description: seo.description,
     ...(socialImage && { images: [socialImage] }),
   },

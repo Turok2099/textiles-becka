@@ -1,5 +1,5 @@
 import { LuBadge, LuCoffee, LuCupSoda, LuGlassWater, LuNotebookPen } from "react-icons/lu";
-import Image from "next/image";
+import { CloudImage } from "@/components/CloudImage";
 import Link from "next/link";
 import { CardCarousel } from "@/components/CardCarousel";
 import { getUploadedImages } from "@/lib/cloudinary";
@@ -21,7 +21,7 @@ export async function Promo() {
     <section id="promocionales" className="section tint" aria-labelledby="promo-titulo">
       <div className="wrap">
         <div className="products-banner">
-          <Image className="products-cover" src={promoCover.src} alt={promoCover.alt} width={promoCover.width} height={promoCover.height} sizes="(min-width: 76rem) 70rem, 100vw" />
+          <CloudImage className="products-cover" src={promoCover.src} alt={promoCover.alt} width={promoCover.width} height={promoCover.height} sizes="(min-width: 76rem) 70rem, 100vw" />
           <div className="products-intro">
             <p className="eyebrow">Con tu marca</p>
             <h2 id="promo-titulo">Artículos promocionales</h2>

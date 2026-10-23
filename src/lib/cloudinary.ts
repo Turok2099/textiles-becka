@@ -56,9 +56,14 @@ function toImage(slot: ImageSlot, r: Resource, index: number): UploadedImage {
       ? `g_xy_center,x_${Math.round((r.width * fx) / 100)},y_${Math.round((r.height * fy) / 100)}`
       : "g_auto";
   const crop = (w: number, h: number) => `c_fill,${focus},w_${w},h_${h},f_auto,q_auto`;
+  // Mismo recorte en varios anchos: Cloudinary entrega la medida y el formato adecuados a cada pantalla.
+  const srcSet = [...new Set([320, 480, 640, 800, slot.width].filter((w) => w <= slot.width))]
+    .map((w) => `${transformUrl(r, r.version, crop(w, Math.round((w * slot.height) / slot.width)))} ${w}w`)
+    .join(", ");
   return {
     publicId: r.public_id,
     src: transformUrl(r, r.version, crop(slot.width, slot.height)),
+    srcSet,
     thumb: transformUrl(r, r.version, crop(240, Math.round((240 * slot.height) / slot.width))),
     full: transformUrl(r, r.version, "c_limit,w_1400,f_auto,q_auto"),
     origWidth: r.width,

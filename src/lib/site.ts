@@ -1,15 +1,18 @@
 // Datos comerciales de BKTX. Editar aquí; los componentes solo leen este archivo.
-// Lo confirmado viene de las redes de la clienta (nombre "Becka uniformes", "Pedidos y catálogo",
-// enlace de WhatsApp en la bio de Instagram). Todo lo demás es propuesta editable.
+// Confirmado por el propietario: nombre "BKTX Soluciones Textiles" y zona de atención en Ciudad de México (sin domicilio público).
+// También vienen de las redes de la clienta "Pedidos y catálogo" y el WhatsApp de la bio de Instagram. Todo lo demás es propuesta editable.
 
 export const site = {
-  name: "BKTX",
+  name: "BKTX Soluciones Textiles",
+  shortName: "BKTX",
+  // Zona de atención. No publicar domicilio, coordenadas ni mapa: se trabaja desde casa.
+  serviceArea: "Ciudad de México",
   description:
-    "Uniformes escolares, deportivos y empresariales, playeras y sudaderas personalizadas con bordado, sublimación o DTF. Pedidos y catálogo por WhatsApp.",
+    "Uniformes escolares, deportivos y empresariales en CDMX, playeras y sudaderas personalizadas con bordado, sublimación o DTF. Pedidos y catálogo por WhatsApp.",
   hero: {
     eyebrow: "Uniformes y textiles",
     title:
-      "Uniformes y productos textiles personalizados, tu idea en cada detalle",
+      "Uniformes y productos textiles personalizados en Ciudad de México, tu idea en cada detalle",
     image: {
       src: "/productos/hero.webp",
       width: 928,
@@ -45,14 +48,14 @@ export const site = {
     },
   },
   contact: {
-    description: "Escríbenos por WhatsApp o llámanos para pedidos y catálogo.",
+    description: "Escríbenos por WhatsApp o llámanos para pedidos y catálogo. Atendemos Ciudad de México.",
     // Teléfono proporcionado por la clienta: +52 55 4568 3821.
-    phone: { label: "+52 55 4568 3821", href: "tel:+525545683821" },
+    phone: { label: "+52 55 4568 3821", e164: "+525545683821", href: "tel:+525545683821" },
   },
   social: {
     instagram: {
       label: "Instagram",
-      handle: "@beckauniformes",
+      handle: "@bktxsolucionestextiles",
       href: "https://www.instagram.com/bktxsolucionestextiles/",
     },
     tiktok: {

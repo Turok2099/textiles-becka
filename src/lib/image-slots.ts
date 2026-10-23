@@ -7,7 +7,8 @@ import { promoCategories } from "@/lib/promo";
 import { products } from "@/lib/products";
 import { services } from "@/lib/services";
 
-export type SlotImage = { src: string; width: number; height: number; alt: string };
+// `srcSet` (solo en fotos subidas a Cloudinary) lista variantes del mismo recorte para servirlas directo, sin /_next/image.
+export type SlotImage = { src: string; width: number; height: number; alt: string; srcSet?: string };
 
 // Foto subida por la clienta. `src` es la versión recortada que ve el sitio; `thumb` es su miniatura,
 // `full` la foto completa (sin recortar) y fx/fy el centro del encuadre en % de la foto original (sin valor: automático).
@@ -80,5 +81,5 @@ export function findSlot(id: string): ImageSlot | undefined {
 
 // Lo mínimo que necesita el carrusel del sitio (evita enviar al navegador datos de administración).
 export function toCarousel(photos: UploadedImage[]): SlotImage[] {
-  return photos.map(({ src, width, height, alt }) => ({ src, width, height, alt }));
+  return photos.map(({ src, width, height, alt, srcSet }) => ({ src, width, height, alt, srcSet }));
 }

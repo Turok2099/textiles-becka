@@ -13,9 +13,8 @@ export const isIndexable =
   process.env.NODE_ENV === "production" && Boolean(siteUrl) && process.env.VERCEL_ENV !== "preview";
 
 export const seo = {
-  title: "Uniformes y playeras personalizadas",
-  description:
-    "Uniformes escolares, deportivos y empresariales, playeras y sudaderas personalizadas con bordado, sublimación o DTF. Pedidos y catálogo por WhatsApp.",
+  title: "Uniformes personalizados en CDMX",
+  description: site.description,
   googleVerification: process.env.GOOGLE_SITE_VERIFICATION?.trim() || undefined,
   gaId: /^G-[A-Z0-9]+$/.test(process.env.NEXT_PUBLIC_GA_ID?.trim() ?? "") ? process.env.NEXT_PUBLIC_GA_ID!.trim() : undefined,
 };

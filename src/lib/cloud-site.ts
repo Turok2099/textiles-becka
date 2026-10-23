@@ -6,6 +6,9 @@ const cloudName = process.env.CLOUDINARY_CLOUD_NAME?.trim();
 
 const migrated = new Set([
   "/logo/bktx-logo.png",
+  "/productos/hero.webp",
+  "/productos/portada.webp",
+  "/productos/promocionales.webp",
   "/nosotros/01-quienes-somos.png",
   "/nosotros/02-idea-al-producto.png",
   "/nosotros/03-productos-promocionales.png",
@@ -23,5 +26,5 @@ export function cloudUrl(publicId: string, transform: string) {
 
 // Miniatura al compartir (Facebook, WhatsApp, X): JPG de 1200 × 630, unos 100 KB.
 export const socialImage = cloudName
-  ? { url: cloudUrl("bktx-sitio/social/opengraph", "c_fill,g_center,w_1200,h_630,f_jpg,q_auto:good"), width: 1200, height: 630, alt: "BKTX soluciones textiles: uniformes que representan tu marca" }
+  ? { url: cloudUrl("bktx-sitio/social/opengraph", "c_fill,g_center,w_1200,h_630,f_jpg,q_auto:good"), width: 1200, height: 630, alt: "BKTX Soluciones Textiles: uniformes que representan tu marca" }
   : undefined;

@@ -11,6 +11,9 @@ if (!cloud || !key || !secret) throw new Error("Faltan las variables CLOUDINARY_
 
 const files = [
   "public/logo/bktx-logo.png",
+  "public/productos/hero.webp",
+  "public/productos/portada.webp",
+  "public/productos/promocionales.webp",
   "public/nosotros/01-quienes-somos.png",
   "public/nosotros/02-idea-al-producto.png",
   "public/nosotros/03-productos-promocionales.png",

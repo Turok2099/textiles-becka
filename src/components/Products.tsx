@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { LuArrowRight, LuChevronDown, LuGraduationCap, LuShirt, LuShoppingBag, LuStethoscope, LuTrophy, LuWind } from "react-icons/lu";
-import Image from "next/image";
+import { CloudImage } from "@/components/CloudImage";
 import { CardCarousel } from "@/components/CardCarousel";
 import { getUploadedImages } from "@/lib/cloudinary";
 import { slotId, toCarousel } from "@/lib/image-slots";
@@ -26,7 +26,7 @@ export async function Products() {
       <div className="wrap">
         <div className="products-banner">
           {productsCover && (
-            <Image className="products-cover" src={productsCover.src} alt={productsCover.alt} width={productsCover.width} height={productsCover.height} sizes="(min-width: 76rem) 70rem, 100vw" />
+            <CloudImage className="products-cover" src={productsCover.src} alt={productsCover.alt} width={productsCover.width} height={productsCover.height} sizes="(min-width: 76rem) 70rem, 100vw" />
           )}
           <div className="products-intro">
             <p className="eyebrow">Hecho a tu medida</p>

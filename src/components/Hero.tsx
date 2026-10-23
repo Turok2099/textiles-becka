@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { CloudImage } from "@/components/CloudImage";
 import { site } from "@/lib/site";
 
 export function Hero() {
@@ -11,7 +11,7 @@ export function Hero() {
         <p className="lead">{hero.description}</p>
         <a className="button" href={hero.cta.href}>{hero.cta.label}</a>
       </div>
-      <Image className="hero-media" src={hero.image.src} alt={hero.image.alt} width={hero.image.width} height={hero.image.height} sizes="(min-width: 48rem) 28rem, 90vw" priority />
+      <CloudImage className="hero-media" src={hero.image.src} alt={hero.image.alt} width={hero.image.width} height={hero.image.height} sizes="(min-width: 48rem) 28rem, 90vw" priority />
     </section>
   );
 }

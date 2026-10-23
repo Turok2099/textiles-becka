@@ -33,7 +33,7 @@ export function SiteFooter() {
           <ul>{topics.map((t) => <li key={t.slug}><Link href={`/${t.slug}`}>{t.name}</Link></li>)}</ul>
         </nav>
         <p className="copy">
-          © {site.name}
+          © {site.name} · Atención en {site.serviceArea}
           <Link className="admin-link" href="/admin/login" prefetch={false} aria-label="Acceso administrador"><LuLock aria-hidden="true" /></Link>
         </p>
       </div>

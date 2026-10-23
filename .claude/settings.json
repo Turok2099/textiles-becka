@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(cd \"c:/Programacion Local/Nuevos_Sitios/textiles-becka\"; cat .env.example; echo ---; sed 's/=.*/=<oculto>/' .env.local; echo ---; cat src/components/Contact.tsx src/components/SiteFooter.tsx | head -80; grep -n \"title\\\\|intro\" src/lib/nosotros.ts | head -12)",
-      "Bash(node --env-file=.env.local scripts/upload-site-images.mjs)"
+      "Bash(node --env-file=.env.local scripts/upload-site-images.mjs)",
+      "Bash(node \"C:/Users/jorge/AppData/Local/Temp/claude/c--Programacion-Local-Nuevos-Sitios-textiles-becka/2a9cbcb3-fe8a-4801-bb5a-f919fd384a50/scratchpad/cdp.mjs\" http://localhost:3111 / /uniformes-escolares /nosotros)",
+      "Bash(curl -s -o /dev/null -m 3 -w \"%{http_code}\\\\n\" http://localhost:3111/)",
+      "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 3111 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess\")",
+      "PowerShell($c = Get-NetTCPConnection -LocalPort 3111 -ErrorAction SilentlyContinue | Where-Object State -eq 'Listen'; $c | Select-Object LocalAddress,OwningProcess; foreach \\($p in \\($c | Select-Object -ExpandProperty OwningProcess -Unique\\)\\) { \\(Get-CimInstance Win32_Process -Filter \"ProcessId=$p\"\\).CommandLine; })",
+      "PowerShell(netstat -ano | Select-String \":3111\"; Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Select-Object ProcessId, @{n='cmd';e={$_.CommandLine.Substring\\(0,[Math]::Min\\(140,$_.CommandLine.Length\\)\\)}})",
+      "PowerShell(Stop-Process -Id 36664,51704 -Force -ErrorAction SilentlyContinue; Start-Sleep 1; try { \\(Invoke-WebRequest http://localhost:3111/ -TimeoutSec 3 -UseBasicParsing\\).StatusCode } catch { \"3111 cerrado\" }; netstat -ano | Select-String \"LISTENING\" | Select-String \":3000 \")"
     ]
   }
 }

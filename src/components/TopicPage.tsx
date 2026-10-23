@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { CloudImage } from "@/components/CloudImage";
 import Link from "next/link";
 import { LuArrowRight } from "react-icons/lu";
 import { CardCarousel } from "@/components/CardCarousel";
@@ -11,6 +11,8 @@ import { findSlot, toCarousel, type SlotImage } from "@/lib/image-slots";
 import { products } from "@/lib/products";
 import { promoCategories, promoCover } from "@/lib/promo";
 import { site } from "@/lib/site";
+import { JsonLd } from "@/components/JsonLd";
+import { topicData } from "@/lib/structured-data";
 import { getTopic } from "@/lib/topics";
 
 // Artículos de la lista: los del tema (items) o, en líneas de producto, los de sus categorías en products.ts.
@@ -60,7 +62,7 @@ export async function TopicPage({ slug }: Readonly<{ slug: string }>) {
           </div>
           {photos.length > 0 && (
             <div className="card product-card topic-media">
-              <CardCarousel photos={photos} name={topic.name} sizes="(min-width: 48rem) 28rem, 90vw" />
+              <CardCarousel photos={photos} name={topic.name} sizes="(min-width: 48rem) 28rem, 90vw" eager />
             </div>
           )}
         </section>
@@ -70,7 +72,7 @@ export async function TopicPage({ slug }: Readonly<{ slug: string }>) {
             <h2 id="tema-items">{topic.itemsTitle}</h2>
             <p className="lead">{topic.itemsIntro}</p>
             {isPromo && (
-              <Image className="topic-cover" src={promoCover.src} alt={promoCover.alt} width={promoCover.width} height={promoCover.height} sizes="(min-width: 76rem) 70rem, 100vw" />
+              <CloudImage className="topic-cover" src={promoCover.src} alt={promoCover.alt} width={promoCover.width} height={promoCover.height} sizes="(min-width: 76rem) 70rem, 100vw" />
             )}
             {isPromo ? (
               <ul className="grid product-grid">
@@ -126,6 +128,7 @@ export async function TopicPage({ slug }: Readonly<{ slug: string }>) {
       </main>
       <SiteFooter />
       <WhatsAppButton />
+      <JsonLd data={topicData(topic)} />
     </div>
   );
 }
