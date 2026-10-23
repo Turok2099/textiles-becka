@@ -10,6 +10,7 @@ export type ContactResult = { status: "sent" | "fallback" } | { status: "invalid
 // Límite de envíos por IP, en memoria: un freno básico contra abuso, no una defensa completa.
 const sends = new Map<string, { count: number; since: number }>();
 const MAX_SENDS = 5;
+const MIN_FILL_MS = 3000;
 const WINDOW_MS = 15 * 60 * 1000;
 
 const clean = (v: FormDataEntryValue | null, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
@@ -18,10 +19,17 @@ export async function sendContact(formData: FormData): Promise<ContactResult> {
   // Campo trampa: las personas no lo ven; si viene relleno es un bot y se responde "enviado" sin enviar nada.
   if (clean(formData.get("sitio"), 200)) return { status: "sent" };
 
+  // Segundos entre mostrar el formulario y enviarlo: una persona tarda más de 3; un bot o un envío directo, no.
+  // Se responde "enviado" para no darle pistas a quien automatiza.
+  const elapsed = Number(formData.get("t"));
+  if (!Number.isFinite(elapsed) || elapsed < MIN_FILL_MS) return { status: "sent" };
+
   const nombre = clean(formData.get("nombre"), 100);
   const correo = clean(formData.get("correo"), 150);
   const telefono = clean(formData.get("telefono"), 30);
   const mensaje = clean(formData.get("mensaje"), 2000);
+  // El spam casi siempre trae enlaces: más de 2 en el texto se descarta en silencio.
+  if (((nombre + " " + mensaje).match(/https?:\/\/|www\./gi) ?? []).length > 2) return { status: "sent" };
   if (!nombre || !mensaje) return { status: "invalid", error: "Escribe tu nombre y lo que necesitas." };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) return { status: "invalid", error: "Revisa que el correo esté bien escrito." };
   if (telefono.replace(/\D/g, "").length < 8) return { status: "invalid", error: "Revisa que el teléfono esté completo." };

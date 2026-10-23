@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, type FormEvent } from "react";
+import { useEffect, useRef, useState, useTransition, type FormEvent } from "react";
 import { sendContact } from "@/app/contacto/actions";
 
 type Phase = { name: "idle" | "sent" | "fallback" } | { name: "invalid"; error: string };
@@ -11,11 +11,24 @@ export function ContactForm({ whatsappNumber }: Readonly<{ whatsappNumber: strin
   const [phase, setPhase] = useState<Phase>({ name: "idle" });
   const [waHref, setWaHref] = useState("");
   const [pending, startTransition] = useTransition();
+  // Momento en que se mostró el formulario: un envío casi instantáneo es de un bot (ver actions.ts).
+  const shownAt = useRef(0);
+  const status = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    shownAt.current = Date.now();
+  }, []);
+
+  // Lleva el resultado a la vista: bajo el botón puede quedar fuera de pantalla.
+  useEffect(() => {
+    if (phase.name !== "idle") status.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [phase]);
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
+    data.set("t", String(Date.now() - shownAt.current));
     const text = [
       "Hola, quiero información de BKTX.",
       `Nombre: ${data.get("nombre")}`,
@@ -62,9 +75,9 @@ export function ContactForm({ whatsappNumber }: Readonly<{ whatsappNumber: strin
         </label>
       </div>
       <button className="button" type="submit" disabled={pending}>{pending ? "Enviando…" : "Enviar mensaje"}</button>
-      <div className="form-note" role="status">
+      <div ref={status} className={`form-note${phase.name === "sent" ? " ok" : phase.name === "idle" ? "" : " warn"}`} role="status">
         {phase.name === "idle" && <p>Tu mensaje llegará a nuestro correo. También puedes escribirnos por WhatsApp.</p>}
-        {phase.name === "sent" && <p>Recibimos tu mensaje. Gracias por escribirnos.</p>}
+        {phase.name === "sent" && <p><strong>Recibimos tu mensaje.</strong> En breve nos comunicaremos contigo.</p>}
         {phase.name === "invalid" && <p>{phase.error}</p>}
         {phase.name === "fallback" && (
           <p>

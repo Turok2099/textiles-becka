@@ -336,3 +336,6 @@ h3 { font-size: 1.125rem; font-weight: 600; }
 .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 .form-note p { margin: 0; }
 .contact-form .button:disabled { opacity: 0.6; cursor: progress; }
+.form-note.ok, .form-note.warn { padding: 0.75rem 1rem; border: 1px solid; border-radius: 0.5rem; font-size: 0.9375rem; color: var(--foreground); }
+.form-note.ok { background: #e9f7ee; border-color: #2e7d4f; }
+.form-note.warn { background: var(--tint); border-color: var(--accent); }
