@@ -8,7 +8,10 @@
       "Bash(powershell -NoProfile -Command \"Get-NetTCPConnection -LocalPort 3111 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess\")",
       "PowerShell($c = Get-NetTCPConnection -LocalPort 3111 -ErrorAction SilentlyContinue | Where-Object State -eq 'Listen'; $c | Select-Object LocalAddress,OwningProcess; foreach \\($p in \\($c | Select-Object -ExpandProperty OwningProcess -Unique\\)\\) { \\(Get-CimInstance Win32_Process -Filter \"ProcessId=$p\"\\).CommandLine; })",
       "PowerShell(netstat -ano | Select-String \":3111\"; Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Select-Object ProcessId, @{n='cmd';e={$_.CommandLine.Substring\\(0,[Math]::Min\\(140,$_.CommandLine.Length\\)\\)}})",
-      "PowerShell(Stop-Process -Id 36664,51704 -Force -ErrorAction SilentlyContinue; Start-Sleep 1; try { \\(Invoke-WebRequest http://localhost:3111/ -TimeoutSec 3 -UseBasicParsing\\).StatusCode } catch { \"3111 cerrado\" }; netstat -ano | Select-String \"LISTENING\" | Select-String \":3000 \")"
+      "PowerShell(Stop-Process -Id 36664,51704 -Force -ErrorAction SilentlyContinue; Start-Sleep 1; try { \\(Invoke-WebRequest http://localhost:3111/ -TimeoutSec 3 -UseBasicParsing\\).StatusCode } catch { \"3111 cerrado\" }; netstat -ano | Select-String \"LISTENING\" | Select-String \":3000 \")",
+      "Bash(nslookup -type=ns bktxsolucionestextiles.com.mx)",
+      "Bash(nslookup -type=mx bktxsolucionestextiles.com.mx)",
+      "Bash(nslookup -type=txt bktxsolucionestextiles.com.mx)"
     ]
   }
 }

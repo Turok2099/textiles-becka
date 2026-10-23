@@ -1,5 +1,5 @@
 // Datos estructurados (schema.org). Solo datos confirmados y presentes en el sitio: nombre, zona de atención, teléfonos
-// y WhatsApp de site.ts, y el perfil oficial de Instagram. Sin dirección, horarios, precios, reseñas ni valoraciones.
+// y WhatsApp de site.ts, y los perfiles oficiales de Instagram y TikTok. Sin dirección, horarios, precios, reseñas ni valoraciones.
 // Todo requiere el dominio (NEXT_PUBLIC_SITE_URL): sin él, las funciones devuelven undefined y no se emite nada.
 
 import { cloudPublicId, cloudUrl } from "@/lib/cloud-site";
@@ -15,7 +15,7 @@ export function organizationData() {
   if (!siteUrl) return undefined;
   const logoId = cloudPublicId("/logo/bktx-logo.png");
   const { phone } = site.contact;
-  const { whatsapp, instagram } = site.social;
+  const { whatsapp, instagram, tiktok } = site.social;
   return {
     "@context": context,
     "@type": "Organization",
@@ -28,10 +28,10 @@ export function organizationData() {
     areaServed,
     telephone: phone.e164,
     contactPoint: [
-      { "@type": "ContactPoint", contactType: "customer service", telephone: phone.e164, availableLanguage: "es" },
-      { "@type": "ContactPoint", contactType: "customer service", telephone: `+${whatsapp.number}`, url: whatsapp.href, availableLanguage: "es" },
+      { "@type": "ContactPoint", name: "Teléfono", contactType: "customer service", telephone: phone.e164, availableLanguage: "es" },
+      { "@type": "ContactPoint", name: "WhatsApp", contactType: "customer service", telephone: `+${whatsapp.number}`, url: whatsapp.href, availableLanguage: "es" },
     ],
-    sameAs: [instagram.href],
+    sameAs: [instagram.href, tiktok.href],
   };
 }
 

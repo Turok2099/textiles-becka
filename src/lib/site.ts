@@ -2,6 +2,9 @@
 // Confirmado por el propietario: nombre "BKTX Soluciones Textiles" y zona de atención en Ciudad de México (sin domicilio público).
 // También vienen de las redes de la clienta "Pedidos y catálogo" y el WhatsApp de la bio de Instagram. Todo lo demás es propuesta editable.
 
+// WhatsApp +52 55 2079 8115, confirmado por el equipo. Es la única fuente del número: el enlace se deriva de aquí.
+const whatsappNumber = "525520798115";
+
 export const site = {
   name: "BKTX Soluciones Textiles",
   shortName: "BKTX",
@@ -63,11 +66,10 @@ export const site = {
       handle: "@rebecaat0",
       href: "https://www.tiktok.com/@rebecaat0",
     },
-    // Número confirmado por el equipo: +52 55 2079 8115.
     whatsapp: {
       label: "WhatsApp",
-      number: "525520798115",
-      href: `https://wa.me/525520798115?text=${encodeURIComponent("Hola, quiero información sobre pedidos y catálogo de BKTX.")}`,
+      number: whatsappNumber,
+      href: `https://wa.me/${whatsappNumber}?text=${encodeURIComponent("Hola, quiero información sobre pedidos y catálogo de BKTX.")}`,
     },
   },
 } as const;

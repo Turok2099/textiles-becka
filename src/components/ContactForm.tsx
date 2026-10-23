@@ -1,14 +1,21 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useTransition, type FormEvent } from "react";
+import { sendContact } from "@/app/contacto/actions";
 
-// No hay servidor ni correo configurado: al enviar, el mensaje se abre listo en WhatsApp de BKTX.
+type Phase = { name: "idle" | "sent" | "fallback" } | { name: "invalid"; error: string };
+
+// El mensaje se envía al correo de BKTX desde el servidor (Resend). Si el correo no está configurado o falla,
+// se ofrece el mismo mensaje listo para enviar por WhatsApp, para no perder el contacto.
 export function ContactForm({ whatsappNumber }: Readonly<{ whatsappNumber: string }>) {
-  const [sent, setSent] = useState(false);
+  const [phase, setPhase] = useState<Phase>({ name: "idle" });
+  const [waHref, setWaHref] = useState("");
+  const [pending, startTransition] = useTransition();
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const data = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const data = new FormData(form);
     const text = [
       "Hola, quiero información de BKTX.",
       `Nombre: ${data.get("nombre")}`,
@@ -16,8 +23,16 @@ export function ContactForm({ whatsappNumber }: Readonly<{ whatsappNumber: strin
       `Teléfono: ${data.get("telefono")}`,
       `Necesito: ${data.get("mensaje")}`,
     ].join("\n");
-    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
-    setSent(true);
+    setWaHref(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`);
+    startTransition(async () => {
+      try {
+        const result = await sendContact(data);
+        if (result.status === "sent") form.reset();
+        setPhase(result.status === "invalid" ? { name: "invalid", error: result.error } : { name: result.status });
+      } catch {
+        setPhase({ name: "fallback" });
+      }
+    });
   }
 
   return (
@@ -25,26 +40,41 @@ export function ContactForm({ whatsappNumber }: Readonly<{ whatsappNumber: strin
       <h3>Cuéntanos qué necesitas</h3>
       <label>
         Nombre
-        <input name="nombre" type="text" autoComplete="name" required />
+        <input name="nombre" type="text" autoComplete="name" maxLength={100} required />
       </label>
       <label>
         Correo
-        <input name="correo" type="email" autoComplete="email" required />
+        <input name="correo" type="email" autoComplete="email" maxLength={150} required />
       </label>
       <label>
         Teléfono
-        <input name="telefono" type="tel" autoComplete="tel" required />
+        <input name="telefono" type="tel" autoComplete="tel" maxLength={30} required />
       </label>
       <label>
         ¿Qué necesitas?
-        <textarea name="mensaje" rows={4} required />
+        <textarea name="mensaje" rows={4} maxLength={2000} required />
       </label>
-      <button className="button" type="submit">Enviar por WhatsApp</button>
-      <p className="form-note" role="status">
-        {sent
-          ? "Se abrió WhatsApp con tu mensaje. Envíalo desde ahí para que nos llegue."
-          : "Al enviar, se abrirá WhatsApp con tu mensaje listo para mandarlo."}
-      </p>
+      {/* Campo trampa contra bots: oculto para las personas y para lectores de pantalla. */}
+      <div className="hp" aria-hidden="true">
+        <label>
+          No llenar
+          <input name="sitio" type="text" tabIndex={-1} autoComplete="off" />
+        </label>
+      </div>
+      <button className="button" type="submit" disabled={pending}>{pending ? "Enviando…" : "Enviar mensaje"}</button>
+      <div className="form-note" role="status">
+        {phase.name === "idle" && <p>Tu mensaje llegará a nuestro correo. También puedes escribirnos por WhatsApp.</p>}
+        {phase.name === "sent" && <p>Recibimos tu mensaje. Gracias por escribirnos.</p>}
+        {phase.name === "invalid" && <p>{phase.error}</p>}
+        {phase.name === "fallback" && (
+          <p>
+            No pudimos enviar el mensaje por correo.{" "}
+            <a className="card-link" href={waHref} target="_blank" rel="noopener noreferrer">
+              Envíalo por WhatsApp<span className="sr-only"> (se abre en otra pestaña)</span>
+            </a>
+          </p>
+        )}
+      </div>
     </form>
   );
 }

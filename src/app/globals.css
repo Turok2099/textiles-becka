@@ -331,3 +331,8 @@ h3 { font-size: 1.125rem; font-weight: 600; }
   .site-header .nav-panel { left: 0; right: 0; min-width: 0; border-radius: 0; border-inline: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .nav-dd-button svg { transition: none; } }
+
+/* Campo trampa del formulario de contacto */
+.hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.form-note p { margin: 0; }
+.contact-form .button:disabled { opacity: 0.6; cursor: progress; }
