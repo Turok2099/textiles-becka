@@ -20,7 +20,7 @@ function PhotoImage({ p, sizes, className, eager }: { p: Photo; sizes: string; c
 // Con una sola foto se muestra una imagen simple, sin controles.
 // `eager` carga ya la primera foto (para carruseles visibles al abrir la página).
 export function CardCarousel({ photos, name, sizes, eager = false }: { photos: Photo[]; name: string; sizes: string; eager?: boolean }) {
-  const track = useRef<HTMLUListElement>(null);
+  const track = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
 
   if (photos.length === 1) {
@@ -42,13 +42,13 @@ export function CardCarousel({ photos, name, sizes, eager = false }: { photos: P
 
   return (
     <div className="carousel" role="group" aria-roledescription="carrusel" aria-label={`Fotos de ${name}`}>
-      <ul ref={track} className="carousel-track" onScroll={onScroll} tabIndex={0} aria-label={`Fotos de ${name}, desliza para ver más`}>
+      <div ref={track} className="carousel-track" onScroll={onScroll} tabIndex={0} role="group" aria-label={`Fotos de ${name}, desliza para ver más`}>
         {photos.map((p, i) => (
-          <li key={p.src} className="carousel-slide" role="group" aria-roledescription="diapositiva" aria-label={`${i + 1} de ${photos.length}`}>
+          <div key={p.src} className="carousel-slide" role="group" aria-roledescription="diapositiva" aria-label={`${i + 1} de ${photos.length}`}>
             <PhotoImage p={p} sizes={sizes} className="carousel-img" eager={eager && i === 0} />
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
       <button type="button" className="carousel-btn prev" onClick={() => go(index - 1)} disabled={index === 0} aria-label="Foto anterior">
         <LuChevronLeft aria-hidden="true" />
       </button>

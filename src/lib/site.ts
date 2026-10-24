@@ -55,6 +55,14 @@ export const site = {
     // Teléfono proporcionado por la clienta: +52 55 4568 3821.
     phone: { label: "+52 55 4568 3821", e164: "+525545683821", href: "tel:+525545683821" },
   },
+  // Datos del aviso de privacidad (/aviso-de-privacidad), proporcionados por la propietaria.
+  // El domicilio solo se muestra en el aviso por requisito legal: no usarlo en JSON-LD, mapas ni otras secciones.
+  legal: {
+    responsible: "Rebeca Americano Tomas",
+    email: "contacto@bktxsolucionestextiles.com.mx",
+    address: ["Playa Hermosa 606", "Col. Reforma Iztaccíhuatl", "Alcaldía Iztacalco", "C.P. 08810", "Ciudad de México"],
+    updated: "23 de octubre de 2026",
+  },
   social: {
     instagram: {
       label: "Instagram",

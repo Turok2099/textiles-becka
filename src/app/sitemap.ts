@@ -4,5 +4,5 @@ import { topics } from "@/lib/topics";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   if (!isIndexable || !siteUrl) return [];
-  return [{ url: `${siteUrl}/` }, { url: `${siteUrl}/nosotros` }, ...topics.map((t) => ({ url: `${siteUrl}/${t.slug}` }))];
+  return [{ url: `${siteUrl}/` }, { url: `${siteUrl}/nosotros` }, { url: `${siteUrl}/aviso-de-privacidad` },...topics.map((t) => ({ url: `${siteUrl}/${t.slug}` }))];
 }
