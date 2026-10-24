@@ -28,8 +28,6 @@ export const site = {
   },
   nav: [
     { label: "Productos", href: "/#productos" },
-    { label: "Clientes", href: "/#clientes" },
-    { label: "Promocionales", href: "/#promocionales" },
     { label: "Servicios", href: "/#servicios" },
     { label: "Nosotros", href: "/nosotros" },
     { label: "Contacto", href: "/#contacto" },
