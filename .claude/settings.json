@@ -11,7 +11,9 @@
       "PowerShell(Stop-Process -Id 36664,51704 -Force -ErrorAction SilentlyContinue; Start-Sleep 1; try { \\(Invoke-WebRequest http://localhost:3111/ -TimeoutSec 3 -UseBasicParsing\\).StatusCode } catch { \"3111 cerrado\" }; netstat -ano | Select-String \"LISTENING\" | Select-String \":3000 \")",
       "Bash(nslookup -type=ns bktxsolucionestextiles.com.mx)",
       "Bash(nslookup -type=mx bktxsolucionestextiles.com.mx)",
-      "Bash(nslookup -type=txt bktxsolucionestextiles.com.mx)"
+      "Bash(nslookup -type=txt bktxsolucionestextiles.com.mx)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{size_download}\\\\n\" \"http://localhost:3100/_next/static/chunks/3j_x7s8kytmzo.css\")",
+      "Bash(curl -s \"http://localhost:3100/_next/static/chunks/3j_x7s8kytmzo.css\")"
     ]
   }
 }

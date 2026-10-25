@@ -5,6 +5,7 @@ import { Hero } from "@/components/Hero";
 import { Products } from "@/components/Products";
 import { Promo } from "@/components/Promo";
 import { Reviews } from "@/components/Reviews";
+import { Season } from "@/components/Season";
 import { Services } from "@/components/Services";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -17,6 +18,7 @@ export function HomePage() {
       <SiteHeader />
       <main id="contenido">
         <Hero />
+        <Season />
         <Products />
         <Clients />
         <Promo />

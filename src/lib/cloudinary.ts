@@ -1,7 +1,20 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
 import { cacheLife, cacheTag } from "next/cache";
-import { imageSlots, MAX_PHOTOS, SLOT_ROOT, type ImageSlot, type UploadedImage } from "@/lib/image-slots";
+import {
+  imageSlots,
+  MAX_PHOTOS,
+  MAX_SEASON,
+  SEASON_FOLDER,
+  SEASON_HEIGHT,
+  SEASON_NOTE_MAX,
+  SEASON_TITLE_MAX,
+  SEASON_WIDTH,
+  SLOT_ROOT,
+  type ImageSlot,
+  type SeasonItem,
+  type UploadedImage,
+} from "@/lib/image-slots";
 
 export const IMAGES_TAG = "imagenes";
 
@@ -157,10 +170,14 @@ function sign(params: Record<string, string | number>) {
 // Datos firmados para que el navegador suba una foto directo a Cloudinary (el secreto no sale del servidor).
 // Cada foto lleva un identificador único en la carpeta de su ranura y entra al final de la galería (pos = hora de subida).
 export function createUploadSignature(slot: ImageSlot, alt: string, pos: number) {
+  return signUpload(slot.folder, { alt, pos });
+}
+
+function signUpload(folder: string, context: Record<string, string | number>) {
   const params = {
     allowed_formats: "jpg,jpeg,png,webp",
-    context: contextValue({ alt, pos }),
-    public_id: `${slot.folder}/${Date.now().toString(36)}-${randomBytes(3).toString("hex")}`,
+    context: contextValue(context),
+    public_id: `${folder}/${Date.now().toString(36)}-${randomBytes(3).toString("hex")}`,
     timestamp: Math.floor(Date.now() / 1000),
   };
   return {
@@ -177,8 +194,12 @@ async function hardDelete(publicId: string) {
   if (!res.ok) throw new Error(`Cloudinary respondió ${res.status}`);
 }
 
+function assertInFolder(folder: string, publicId: string) {
+  if (!publicId.startsWith(`${folder}/`) || publicId.includes("..")) throw new Error("Foto no válida");
+}
+
 function assertInSlot(slot: ImageSlot, publicId: string) {
-  if (!publicId.startsWith(`${slot.folder}/`) || publicId.includes("..")) throw new Error("Foto no válida");
+  assertInFolder(slot.folder, publicId);
 }
 
 // Comprueba que las fotos recién subidas existen en Cloudinary (confirmación del servidor).
@@ -236,4 +257,117 @@ export async function restorePhoto(slot: ImageSlot, publicId: string) {
   if (photosOf(slot, resources).length >= MAX_PHOTOS) throw new Error(`La categoría ya tiene las ${MAX_PHOTOS} fotos`);
   await updateContext(publicId, { trashed: 0 });
   return listSlotPhotos(slot);
+}
+
+// ── Artículos de temporada ─────────────────────────────────────────────────────
+// Misma mecánica que las galerías (datos en el `context` de cada foto): title, note, pos y trashed.
+// El texto se guarda con un prefijo "~" porque Cloudinary puede descartar valores vacíos y así se puede borrar una descripción.
+
+export function cleanSeasonText(value: unknown, max: number) {
+  return String(value ?? "").replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
+}
+
+function seasonText(v: string | undefined) {
+  return v?.startsWith("~") ? v.slice(1) : "";
+}
+
+function toSeasonItem(r: Resource): SeasonItem {
+  const crop = (w: number) => `c_fill,g_auto,w_${w},h_${Math.round((w * SEASON_HEIGHT) / SEASON_WIDTH)},f_auto,q_auto`;
+  const srcSet = [400, 600, SEASON_WIDTH].map((w) => `${transformUrl(r, r.version, crop(w))} ${w}w`).join(", ");
+  return {
+    publicId: r.public_id,
+    src: transformUrl(r, r.version, crop(SEASON_WIDTH)),
+    srcSet,
+    thumb: transformUrl(r, r.version, crop(240)),
+    width: SEASON_WIDTH,
+    height: SEASON_HEIGHT,
+    title: seasonText(r.context?.custom?.title) || "Artículo de temporada",
+    note: seasonText(r.context?.custom?.note),
+  };
+}
+
+function seasonOf(resources: Resource[]): SeasonItem[] {
+  return resources
+    .filter((r) => r.public_id.startsWith(`${SEASON_FOLDER}/`) && !isTrashed(r))
+    .sort((a, b) => orderKey(a) - orderKey(b))
+    .map(toSeasonItem);
+}
+
+// Artículos que se muestran en la portada (en caché, igual que las galerías).
+export async function getSeasonItems(): Promise<SeasonItem[]> {
+  "use cache";
+  cacheTag(IMAGES_TAG);
+  cacheLife("hours");
+
+  if (!isCloudinaryConfigured) return [];
+  try {
+    return seasonOf(await listResources());
+  } catch (error) {
+    console.error("No se pudieron leer los artículos de temporada:", error);
+    cacheLife("minutes");
+    return [];
+  }
+}
+
+export async function listSeason(): Promise<SeasonItem[]> {
+  return seasonOf(await listResources());
+}
+
+export async function createSeasonSignature(title: string, note: string) {
+  const current = (await listSeason()).length;
+  if (current >= MAX_SEASON) throw new Error(`Ya tienes los ${MAX_SEASON} artículos disponibles. Quita alguno para agregar otro.`);
+  return signUpload(SEASON_FOLDER, {
+    title: `~${cleanSeasonText(title, SEASON_TITLE_MAX)}`,
+    note: `~${cleanSeasonText(note, SEASON_NOTE_MAX)}`,
+    pos: Date.now(),
+  });
+}
+
+export async function confirmSeasonUploaded(publicId: string) {
+  assertInFolder(SEASON_FOLDER, publicId);
+  const resources = await listResources();
+  if (!resources.some((r) => r.public_id === publicId)) throw new Error("La foto no llegó al servidor");
+  return seasonOf(resources);
+}
+
+export async function saveSeasonText(publicId: string, title: string, note: string) {
+  assertInFolder(SEASON_FOLDER, publicId);
+  const t = cleanSeasonText(title, SEASON_TITLE_MAX);
+  if (!t) throw new Error("Escribe un título para el artículo");
+  await updateContext(publicId, { title: `~${t}`, note: `~${cleanSeasonText(note, SEASON_NOTE_MAX)}` });
+  return listSeason();
+}
+
+export async function saveSeasonOrder(orderedIds: string[]) {
+  const active = (await listResources()).filter((r) => r.public_id.startsWith(`${SEASON_FOLDER}/`) && !isTrashed(r));
+  const current = active.map((r) => r.public_id);
+  const same = orderedIds.length === current.length && new Set(orderedIds).size === current.length && orderedIds.every((id) => current.includes(id));
+  if (!same) throw new Error("La lista cambió; recarga la página");
+  const posOf = new Map(active.map((r) => [r.public_id, num(r.context?.custom?.pos)]));
+  await Promise.all(orderedIds.map((id, i) => (posOf.get(id) === (i + 1) * 10 ? null : updateContext(id, { pos: (i + 1) * 10 }))));
+  return listSeason();
+}
+
+export async function trashSeason(publicId: string) {
+  assertInFolder(SEASON_FOLDER, publicId);
+  await updateContext(publicId, { trashed: Date.now() });
+  try {
+    const expired = (await listResources()).filter((r) => {
+      const t = num(r.context?.custom?.trashed) ?? 0;
+      return t > 0 && Date.now() - t > TRASH_GRACE_MS;
+    });
+    await Promise.all(expired.map((r) => hardDelete(r.public_id)));
+  } catch (error) {
+    console.error("No se pudo vaciar la papelera de Cloudinary:", error);
+  }
+  return listSeason();
+}
+
+export async function restoreSeason(publicId: string) {
+  assertInFolder(SEASON_FOLDER, publicId);
+  const resources = await listResources();
+  if (!resources.some((r) => r.public_id === publicId)) throw new Error("Ya no se puede deshacer");
+  if (seasonOf(resources).length >= MAX_SEASON) throw new Error(`Ya tienes los ${MAX_SEASON} artículos disponibles`);
+  await updateContext(publicId, { trashed: 0 });
+  return listSeason();
 }

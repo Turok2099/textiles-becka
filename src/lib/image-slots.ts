@@ -79,6 +79,26 @@ export function findSlot(id: string): ImageSlot | undefined {
   return imageSlots.find((s) => s.id === id);
 }
 
+// Artículos de temporada: no son una ranura fija sino una lista que administra la clienta (una foto = un artículo).
+// Cada uno guarda en Cloudinary su título y una descripción corta; el orden es el de la lista.
+export const SEASON_FOLDER = `${SLOT_ROOT}/temporada`;
+export const MAX_SEASON = 12;
+export const SEASON_TITLE_MAX = 60;
+export const SEASON_NOTE_MAX = 160;
+export const SEASON_WIDTH = 800;
+export const SEASON_HEIGHT = 1000;
+
+export type SeasonItem = {
+  publicId: string;
+  src: string;
+  srcSet: string;
+  thumb: string;
+  width: number;
+  height: number;
+  title: string;
+  note: string;
+};
+
 // Lo mínimo que necesita el carrusel del sitio (evita enviar al navegador datos de administración).
 export function toCarousel(photos: UploadedImage[]): SlotImage[] {
   return photos.map(({ src, width, height, alt, srcSet }) => ({ src, width, height, alt, srcSet }));

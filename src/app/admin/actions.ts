@@ -5,17 +5,24 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { assertAdmin, createSession, credentialsAreValid, destroySession } from "@/lib/auth";
 import {
+  cleanSeasonText,
+  confirmSeasonUploaded,
   confirmUploaded,
+  createSeasonSignature,
   createUploadSignature,
   IMAGES_TAG,
   isCloudinaryConfigured,
   listSlotPhotos,
   restorePhoto,
+  restoreSeason,
   saveFraming,
   saveOrder,
+  saveSeasonOrder,
+  saveSeasonText,
   trashPhoto,
+  trashSeason,
 } from "@/lib/cloudinary";
-import { findSlot, MAX_PHOTOS, type UploadedImage } from "@/lib/image-slots";
+import { findSlot, MAX_PHOTOS, SEASON_NOTE_MAX, SEASON_TITLE_MAX, type SeasonItem, type UploadedImage } from "@/lib/image-slots";
 
 export type LoginState = { error?: string };
 
@@ -118,4 +125,57 @@ export async function removePhoto(slotId: string, publicId: string) {
 
 export async function undoRemovePhoto(slotId: string, publicId: string) {
   return withSlot(slotId, (slot) => restorePhoto(slot, publicId));
+}
+
+// ── Artículos de temporada ─────────────────────────────────────────────────────
+export type SeasonResult = { ok: true; items: SeasonItem[] } | { ok: false; error: string };
+
+async function withSeason(run: () => Promise<SeasonItem[]>): Promise<SeasonResult> {
+  await assertAdmin();
+  if (!isCloudinaryConfigured) return { ok: false, error: "Cloudinary no está configurado en el servidor." };
+  try {
+    const items = await run();
+    updateTag(IMAGES_TAG);
+    return { ok: true, items };
+  } catch (error) {
+    console.error("Error al guardar artículos de temporada:", error);
+    const known = error instanceof Error && /^(Ya |Escribe )/.test(error.message);
+    return { ok: false, error: known ? (error as Error).message : "No se pudo guardar. Revisa tu conexión e inténtalo de nuevo." };
+  }
+}
+
+export type SeasonSignatureResult =
+  | { ok: true; upload: { url: string; fields: Record<string, string | number> } }
+  | { ok: false; error: string };
+
+// Paso 1: valida el texto y el cupo y devuelve la firma para subir la foto del artículo.
+export async function getSeasonSignature(title: string, note: string): Promise<SeasonSignatureResult> {
+  await assertAdmin();
+  if (!isCloudinaryConfigured) return { ok: false, error: "Cloudinary no está configurado en el servidor." };
+  if (!cleanSeasonText(title, SEASON_TITLE_MAX)) return { ok: false, error: "Escribe un título para el artículo." };
+  try {
+    return { ok: true, upload: await createSeasonSignature(title, cleanSeasonText(note, SEASON_NOTE_MAX)) };
+  } catch (error) {
+    return { ok: false, error: error instanceof Error && error.message.startsWith("Ya ") ? error.message : "No se pudo consultar Cloudinary. Revisa tu conexión e inténtalo de nuevo." };
+  }
+}
+
+export async function confirmSeasonUpload(publicId: string) {
+  return withSeason(() => confirmSeasonUploaded(publicId));
+}
+
+export async function editSeasonItem(publicId: string, title: string, note: string) {
+  return withSeason(() => saveSeasonText(publicId, title, note));
+}
+
+export async function reorderSeason(orderedIds: string[]) {
+  return withSeason(() => saveSeasonOrder(orderedIds));
+}
+
+export async function removeSeasonItem(publicId: string) {
+  return withSeason(() => trashSeason(publicId));
+}
+
+export async function undoRemoveSeasonItem(publicId: string) {
+  return withSeason(() => restoreSeason(publicId));
 }
